@@ -48,6 +48,14 @@
       <many-to-many class="org.hisp.dhis.interpretation.InterpretationComment" column="interpretationcommentid"
         unique="true" foreign-key="fk_interpretation_comments_interpretationcommentid" />
     </list>
+    
+    <property name="likes" />
+    
+    <set name="likedBy" table="intepretation_likedby">
+      <key column="interpretationid" foreign-key="fk_interpretation_likedby_interpretationid" />
+      <many-to-many class="org.hisp.dhis.user.User" column="userid"
+        foreign-key="fk_intepretation_likedby_userid" />
+    </set>
 
     <!-- Access properties -->
     <many-to-one name="user" class="org.hisp.dhis.user.User" column="userid" foreign-key="fk_interpretation_userid" />
@@ -59,20 +67,6 @@
       <many-to-many class="org.hisp.dhis.user.UserGroupAccess" column="usergroupaccessid" unique="true" />
     </set>
 
-    <!-- Object Translation -->
-    <set name="translations" table="interpretationtranslations" cascade="delete-orphan">
-      <key column="interpretationid" foreign-key="fk_objecttranslation_interpretationid" />
-
-      <many-to-many class="org.hisp.dhis.translation.ObjectTranslation">
-        <column name="objecttranslationid" unique="true" />
-        <filter name="locale" condition="locale = :locale" />
-      </many-to-many>
-    </set>
-
   </class>
-
-  <filter-def name="locale">
-    <filter-param name="locale" type="string" />
-  </filter-def>
 
 </hibernate-mapping>

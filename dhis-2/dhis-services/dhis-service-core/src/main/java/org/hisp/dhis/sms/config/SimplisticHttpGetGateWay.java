@@ -28,16 +28,8 @@ package org.hisp.dhis.sms.config;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.h2.util.IOUtils;
@@ -47,8 +39,15 @@ import org.hisp.dhis.sms.outbound.GatewayResponse;
 import org.hisp.dhis.sms.outbound.MessageBatch;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Simplistic http gateway sending smses through a get to a url constructed from
@@ -91,9 +90,9 @@ public class SimplisticHttpGetGateWay
         HttpURLConnection.HTTP_ACCEPTED, HttpURLConnection.HTTP_CREATED );
 
     @Override
-    public List<MessageResponseStatus<GatewayResponse>> sendBatch( MessageBatch batch, SmsGatewayConfig gatewayConfig )
+    public List<MessageResponseStatus> sendBatch( MessageBatch batch, SmsGatewayConfig gatewayConfig )
     {
-        List<MessageResponseStatus<GatewayResponse>> statuses = new ArrayList<>();
+        List<MessageResponseStatus> statuses = new ArrayList<>();
 
         for ( OutBoundMessage message : batch.getBatch() )
         {
@@ -110,11 +109,11 @@ public class SimplisticHttpGetGateWay
     }
 
     @Override
-    public MessageResponseStatus<GatewayResponse> send( String subject, String text, Set<String> recipients, SmsGatewayConfig config )
+    public MessageResponseStatus send( String subject, String text, Set<String> recipients, SmsGatewayConfig config )
     {
         GenericHttpGatewayConfig genericHttpConfiguraiton = (GenericHttpGatewayConfig) config;
 
-        MessageResponseStatus<GatewayResponse> status = new MessageResponseStatus<GatewayResponse>();
+        MessageResponseStatus status = new MessageResponseStatus();
 
         UriComponentsBuilder uri = buildUrl( genericHttpConfiguraiton, text, recipients );
 
@@ -123,8 +122,6 @@ public class SimplisticHttpGetGateWay
         try
         {
             URL requestURL = new URL( uri.build().encode( "ISO-8859-1" ).toUriString() );
-
-            log.info( "Requesting URL: " + uri.build().toString() );
 
             URLConnection conn = requestURL.openConnection();
 
@@ -141,7 +138,7 @@ public class SimplisticHttpGetGateWay
                     .get( httpConnection.getResponseCode() );
 
                 status.setResponseObject( gatewayResponse );
-                status.setResponseMessage( gatewayResponse.getResponseMessage() );
+                status.setDescription( gatewayResponse.getResponseMessage() );
                 status.setOk( true );
 
                 return status;
@@ -150,7 +147,7 @@ public class SimplisticHttpGetGateWay
             else
             {
                 status.setResponseObject( GatewayResponse.FAILED );
-                status.setResponseMessage( GatewayResponse.FAILED.getResponseMessage() );
+                status.setDescription( GatewayResponse.FAILED.getResponseMessage() );
                 status.setOk( false );
 
                 return status;
@@ -163,7 +160,7 @@ public class SimplisticHttpGetGateWay
             IOUtils.closeSilently( reader );
 
             status.setResponseObject( GatewayResponse.FAILED );
-            status.setResponseMessage( GatewayResponse.FAILED.getResponseMessage() );
+            status.setDescription( GatewayResponse.FAILED.getResponseMessage() );
             status.setOk( false );
 
             return status;

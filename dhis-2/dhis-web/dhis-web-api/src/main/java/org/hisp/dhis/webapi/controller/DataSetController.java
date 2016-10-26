@@ -29,6 +29,8 @@ package org.hisp.dhis.webapi.controller;
  */
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
+
 import org.apache.commons.lang3.StringUtils;
 import org.hisp.dhis.common.DisplayDensity;
 import org.hisp.dhis.common.IdScheme;
@@ -39,6 +41,7 @@ import org.hisp.dhis.dataelement.DataElementCategoryOptionCombo;
 import org.hisp.dhis.dataentryform.DataEntryForm;
 import org.hisp.dhis.dataentryform.DataEntryFormService;
 import org.hisp.dhis.dataset.DataSet;
+import org.hisp.dhis.dataset.DataSetElement;
 import org.hisp.dhis.dataset.DataSetService;
 import org.hisp.dhis.datavalue.DataValue;
 import org.hisp.dhis.datavalue.DataValueService;
@@ -67,7 +70,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -205,8 +207,8 @@ public class DataSetController
             throw new WebMessageException( WebMessageUtils.conflict( "Data set does not exist: " + uid ) );
         }
 
-        List<DataElementCategoryCombo> categoryCombos = dataSet.getDataElements().stream().
-            map( DataElement::getCategoryCombo ).distinct().collect( Collectors.toList() );
+         List<DataElementCategoryCombo> categoryCombos = dataSet.getDataSetElements().stream().
+            map( DataSetElement::getResolvedCategoryCombo ).distinct().collect( Collectors.toList() );
 
         Collections.sort( categoryCombos );
 
@@ -306,7 +308,7 @@ public class DataSetController
     {
         DataSet dataSet = dataSets.get( 0 );
 
-        Form form = FormUtils.fromDataSet( dataSets.get( 0 ), metaData );
+        Form form = FormUtils.fromDataSet( dataSets.get( 0 ), metaData, null );
 
 
         Set<String> options = null;
@@ -329,7 +331,7 @@ public class DataSetController
             }
             else
             {
-                dataValues = dataValueService.getDataValues( ou, pe, dataSets.get( 0 ).getDataElements() );
+                dataValues = dataValueService.getDataValues( dataSets.get( 0 ).getDataElements(), Sets.newHashSet( pe ), Sets.newHashSet( ou ) );
             }
 
             FormUtils.fillWithDataValues( form, dataValues );
@@ -339,7 +341,6 @@ public class DataSetController
     }
 
     @RequestMapping( value = { "/{uid}/customDataEntryForm", "/{uid}/form" }, method = { RequestMethod.PUT, RequestMethod.POST }, consumes = "text/html" )
-    @PreAuthorize( "hasRole('ALL')" )
     @ResponseStatus( HttpStatus.NO_CONTENT )
     public void updateCustomDataEntryFormHtml( @PathVariable( "uid" ) String uid,
         @RequestBody String formContent,
@@ -371,7 +372,6 @@ public class DataSetController
     }
 
     @RequestMapping( value = "/{uid}/form", method = RequestMethod.POST, consumes = MediaType.APPLICATION_JSON_VALUE )
-    @PreAuthorize( "hasRole('ALL')" )
     @ApiVersion( value = ApiVersion.Version.ALL, exclude = ApiVersion.Version.V23 )
     @ResponseStatus( HttpStatus.NO_CONTENT )
     public void updateCustomDataEntryFormJson( @PathVariable( "uid" ) String uid, HttpServletRequest request ) throws WebMessageException

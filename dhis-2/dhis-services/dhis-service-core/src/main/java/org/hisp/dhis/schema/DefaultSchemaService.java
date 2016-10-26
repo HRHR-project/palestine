@@ -84,6 +84,7 @@ public class DefaultSchemaService
         add( new DataElementSchemaDescriptor() ).
         add( new DataEntryFormSchemaDescriptor() ).
         add( new DataSetSchemaDescriptor() ).
+        add( new DataSetElementSchemaDescriptor() ).
         add( new DocumentSchemaDescriptor() ).
         add( new EventChartSchemaDescriptor() ).
         add( new EventReportSchemaDescriptor() ).
@@ -96,7 +97,7 @@ public class DefaultSchemaService
         add( new InterpretationSchemaDescriptor() ).
         add( new LegendSchemaDescriptor() ).
         add( new LegendSetSchemaDescriptor() ).
-        add( new MapLayerSchemaDescriptor() ).
+        add( new ExternalMapLayerSchemaDescriptor() ).
         add( new MapSchemaDescriptor() ).
         add( new MapViewSchemaDescriptor() ).
         add( new MessageConversationSchemaDescriptor() ).
@@ -118,6 +119,7 @@ public class DefaultSchemaService
         add( new ProgramStageSchemaDescriptor() ).
         add( new ProgramStageSectionSchemaDescriptor() ).
         add( new ProgramTrackedEntityAttributeSchemaDescriptor() ).
+        add( new ProgramNotificationTemplateSchemaDescriptor() ).
         add( new ProgramValidationSchemaDescriptor() ).
         add( new RelationshipTypeSchemaDescriptor() ).
         add( new ReportSchemaDescriptor() ).
@@ -138,6 +140,10 @@ public class DefaultSchemaService
         add( new ValidationRuleGroupSchemaDescriptor() ).
         add( new ValidationRuleSchemaDescriptor() ).
         add( new PushAnalysisSchemaDescriptor() ).
+        add( new ProgramIndicatorGroupSchemaDescriptor() ).
+        add( new ExternalFileResourceSchemaDescriptor() ).
+        add( new OptionGroupSchemaDescriptor() ).
+        add( new OptionGroupSetSchemaDescriptor()).
         build();
 
     private Map<Class<?>, Schema> classSchemaMap = new HashMap<>();

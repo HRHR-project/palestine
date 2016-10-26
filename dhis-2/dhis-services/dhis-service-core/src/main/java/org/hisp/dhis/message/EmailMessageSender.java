@@ -46,6 +46,7 @@ import org.hisp.dhis.sms.MessageResponseStatus;
 import org.hisp.dhis.sms.MessageResponseSummary;
 import org.hisp.dhis.sms.OutBoundMessage;
 import org.hisp.dhis.sms.outbound.MessageBatch;
+import org.hisp.dhis.system.util.ValidationUtils;
 import org.hisp.dhis.system.velocity.VelocityManager;
 import org.hisp.dhis.user.User;
 import org.hisp.dhis.user.UserSettingKey;
@@ -63,7 +64,7 @@ import static org.apache.commons.lang3.StringUtils.defaultIfEmpty;
  * @author Lars Helge Overland
  */
 public class EmailMessageSender
-    implements MessageSender<EmailResponse>
+    implements MessageSender
 {
     private static final Log log = LogFactory.getLog( EmailMessageSender.class );
 
@@ -106,7 +107,7 @@ public class EmailMessageSender
      */
     @Async
     @Override
-    public MessageResponseStatus<EmailResponse> sendMessage( String subject, String text, String footer, User sender, Set<User> users,
+    public MessageResponseStatus sendMessage( String subject, String text, String footer, User sender, Set<User> users,
         boolean forceSend )
     {
         String hostName = (String) systemSettingManager.getSystemSetting( SettingKey.EMAIL_HOST_NAME );
@@ -115,8 +116,9 @@ public class EmailMessageSender
         String password = (String) systemSettingManager.getSystemSetting( SettingKey.EMAIL_PASSWORD );
         boolean tls = (boolean) systemSettingManager.getSystemSetting( SettingKey.EMAIL_TLS );
         String from = (String) systemSettingManager.getSystemSetting( SettingKey.EMAIL_SENDER );
-        
-        MessageResponseStatus<EmailResponse> status = new MessageResponseStatus<>();
+        String errorMessage = "No recipient found";
+
+        MessageResponseStatus status = new MessageResponseStatus();
 
         if ( hostName == null )
         {
@@ -140,44 +142,57 @@ public class EmailMessageSender
                 boolean doSend = forceSend
                     || (Boolean) userSettingService.getUserSetting( UserSettingKey.MESSAGE_EMAIL_NOTIFICATION, user );
 
-                if ( doSend && user.getEmail() != null && !user.getEmail().trim().isEmpty() )
+                if ( doSend && ValidationUtils.emailIsValid( user.getEmail() ) )
                 {
-                    email.addBcc( user.getEmail() );
+                    if ( isEmailValid( user.getEmail() ) )
+                    {
+                        email.addBcc( user.getEmail() );
 
-                    log.info( "Sending email to user: " + user.getUsername() + " with email address: " + user.getEmail()
-                        + " to host: " + hostName + ":" + port );
+                        log.info( "Sending email to user: " + user.getUsername() + " with email address: "
+                            + user.getEmail() + " to host: " + hostName + ":" + port );
 
-                    hasRecipients = true;
+                        hasRecipients = true;
+                    }
+                    else
+                    {
+                        log.error( user.getEmail() + " is not a valid email for user: " + user.getUsername() );
+
+                        errorMessage = "No valid email address found";
+                    }
                 }
             }
 
             if ( hasRecipients )
             {
                 email.send();
-                
+
                 log.info( "Email sent using host: " + hostName + ":" + port + " with TLS: " + tls );
-                
-                return new MessageResponseStatus<>( "sent", EmailResponse.SENT, true );
+
+                status = new MessageResponseStatus( "Email sent", EmailResponse.SENT, true );
+            }
+            else
+            {
+                status = new MessageResponseStatus( errorMessage, EmailResponse.ABORTED, false );
             }
         }
         catch ( EmailException ex )
         {
             log.warn( "Could not send email: " + ex.getMessage() + ", " + DebugUtils.getStackTrace( ex ) );
-            
-            status = new MessageResponseStatus<>( "failed", EmailResponse.FAILED, false );
+
+            status = new MessageResponseStatus( "Email not sent: " + ex.getMessage(), EmailResponse.FAILED, false );
         }
         catch ( RuntimeException ex )
         {
             log.warn( "Error while sending email: " + ex.getMessage() + ", " + DebugUtils.getStackTrace( ex ) );
-            
-            status = new MessageResponseStatus<>( "failed", EmailResponse.FAILED, false );
+
+            status = new MessageResponseStatus( "Email not sent: " + ex.getMessage(), EmailResponse.FAILED, false );
         }
 
         return status;
     }
 
     @Override
-    public MessageResponseStatus<EmailResponse> sendMessage( String subject, String text, Set<String> recipients )
+    public MessageResponseStatus sendMessage( String subject, String text, Set<String> recipients )
     {
         String hostName = (String) systemSettingManager.getSystemSetting( SettingKey.EMAIL_HOST_NAME );
         int port = (int) systemSettingManager.getSystemSetting( SettingKey.EMAIL_PORT );
@@ -185,8 +200,9 @@ public class EmailMessageSender
         String password = (String) systemSettingManager.getSystemSetting( SettingKey.EMAIL_PASSWORD );
         boolean tls = (boolean) systemSettingManager.getSystemSetting( SettingKey.EMAIL_TLS );
         String from = (String) systemSettingManager.getSystemSetting( SettingKey.EMAIL_SENDER );
+        String errorMessage = "No recipient found";
 
-        MessageResponseStatus<EmailResponse> status = new MessageResponseStatus<>();
+        MessageResponseStatus status = new MessageResponseStatus();
 
         if ( hostName == null )
         {
@@ -203,11 +219,20 @@ public class EmailMessageSender
 
             for ( String recipient : recipients )
             {
-                email.addBcc( recipient );
+                if ( isEmailValid( recipient ) )
+                {
+                    email.addBcc( recipient );
 
-                hasRecipients = true;
+                    hasRecipients = true;
 
-                log.info( "Sending email to : " + recipient + " to host: " + hostName + ":" + port );
+                    log.info( "Sending email to : " + recipient + " to host: " + hostName + ":" + port );
+                }
+                else
+                {
+                    log.error( recipient + " is not a valid email" );
+
+                    errorMessage = "No valid email address found";
+                }
             }
 
             if ( hasRecipients )
@@ -216,27 +241,31 @@ public class EmailMessageSender
 
                 log.info( "Email sent using host: " + hostName + ":" + port + " with TLS: " + tls );
 
-                return new MessageResponseStatus<>( "sent", EmailResponse.SENT, true );
+                return new MessageResponseStatus( "Email sent", EmailResponse.SENT, true );
+            }
+            else
+            {
+                status = new MessageResponseStatus( errorMessage, EmailResponse.ABORTED, false );
             }
         }
         catch ( EmailException ex )
         {
             log.warn( "Error while sending email: " + ex.getMessage() + ", " + DebugUtils.getStackTrace( ex ) );
 
-            status = new MessageResponseStatus<>( "failed", EmailResponse.FAILED, false );
+            status = new MessageResponseStatus( "Email not sent: " + ex.getMessage(), EmailResponse.FAILED, false );
         }
         catch ( RuntimeException ex )
         {
             log.warn( "Error while sending email: " + ex.getMessage() + ", " + DebugUtils.getStackTrace( ex ) );
 
-            status = new MessageResponseStatus<>( "failed", EmailResponse.FAILED, false );
+            status = new MessageResponseStatus( "Email not sent: " + ex.getMessage(), EmailResponse.FAILED, false );
         }
 
         return status;
     }
 
     @Override
-    public MessageResponseStatus<EmailResponse> sendMessage( String subject, String text, String recipient )
+    public MessageResponseStatus sendMessage( String subject, String text, String recipient )
     {
         return sendMessage( subject, text, Sets.newHashSet( recipient ) );
     }
@@ -244,7 +273,7 @@ public class EmailMessageSender
     @Override
     public MessageResponseSummary sendMessageBatch( MessageBatch batch )
     {
-        List<MessageResponseStatus<EmailResponse>> statuses = new ArrayList<>();
+        List<MessageResponseStatus> statuses = new ArrayList<>();
 
         for ( OutBoundMessage email : batch.getBatch() )
         {
@@ -354,7 +383,12 @@ public class EmailMessageSender
         return title;
     }
 
-    private MessageResponseSummary generateSummary( List<MessageResponseStatus<EmailResponse>> statuses )
+    private boolean isEmailValid( String email )
+    {
+        return ValidationUtils.emailIsValid( email );
+    }
+
+    private MessageResponseSummary generateSummary( List<MessageResponseStatus> statuses )
     {
         MessageResponseSummary summary = new MessageResponseSummary();
 
@@ -366,7 +400,7 @@ public class EmailMessageSender
 
         total = statuses.size();
 
-        for ( MessageResponseStatus<EmailResponse> status : statuses )
+        for ( MessageResponseStatus status : statuses )
         {
             if ( EmailResponse.SENT.equals( status.getResponseObject() ) )
             {
@@ -376,7 +410,7 @@ public class EmailMessageSender
             {
                 ok = false;
 
-                errorMessage = status.getResponseObject().getResponseMessage();
+                errorMessage = status.getDescription();
             }
         }
 

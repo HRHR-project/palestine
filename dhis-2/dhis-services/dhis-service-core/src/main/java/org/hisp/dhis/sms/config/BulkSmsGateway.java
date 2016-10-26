@@ -28,11 +28,8 @@ package org.hisp.dhis.sms.config;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.net.URI;
-
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,8 +46,10 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
+import java.net.URI;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
 
 /**
  * @author Zubair <rajazubair.asghar@gmail.com>
@@ -83,9 +82,8 @@ public class BulkSmsGateway
     // Implementation
     // -------------------------------------------------------------------------
 
-    @SuppressWarnings( "unchecked" )
     @Override
-    public List<MessageResponseStatus<GatewayResponse>> sendBatch( MessageBatch smsBatch, SmsGatewayConfig config )
+    public List<MessageResponseStatus> sendBatch( MessageBatch smsBatch, SmsGatewayConfig config )
     {
         BulkSmsGatewayConfig bulkSmsConfig = (BulkSmsGatewayConfig) config;
 
@@ -102,7 +100,7 @@ public class BulkSmsGateway
     }
 
     @Override
-    public MessageResponseStatus<GatewayResponse> send( String subject, String text, Set<String> recipients, SmsGatewayConfig config )
+    public MessageResponseStatus send( String subject, String text, Set<String> recipients, SmsGatewayConfig config )
     {
         UriComponentsBuilder uriBuilder = createUri( (BulkSmsGatewayConfig) config, recipients, SubmissionType.SINGLE );
         uriBuilder.queryParam( "message", text );
@@ -123,15 +121,13 @@ public class BulkSmsGateway
         return uriBuilder;
     }
 
-    private MessageResponseStatus<GatewayResponse> send( UriComponentsBuilder uriBuilder )
+    private MessageResponseStatus send( UriComponentsBuilder uriBuilder )
     {
         ResponseEntity<String> responseEntity = null;
 
         try
         {
             URI url = uriBuilder.build().encode( "ISO-8859-1" ).toUri();
-
-            log.info( "Sending via url  " + url.toString() );
 
             responseEntity = restTemplate.exchange( url, HttpMethod.POST, null, String.class );
         }
@@ -188,9 +184,9 @@ public class BulkSmsGateway
         return uriBuilder;
     }
 
-    private MessageResponseStatus<GatewayResponse> getResponse( ResponseEntity<String> responseEntity )
+    private MessageResponseStatus getResponse( ResponseEntity<String> responseEntity )
     {
-        MessageResponseStatus<GatewayResponse> status = new MessageResponseStatus<GatewayResponse>();
+        MessageResponseStatus status = new MessageResponseStatus();
 
         if ( responseEntity == null )
         {
@@ -207,7 +203,7 @@ public class BulkSmsGateway
         gatewayResponse.setBatchId( StringUtils.split( response, "|" )[2] );
 
         status.setResponseObject( gatewayResponse );
-        status.setResponseMessage( gatewayResponse.getResponseMessage() );
+        status.setDescription( gatewayResponse.getResponseMessage() );
 
         return status;
     }
