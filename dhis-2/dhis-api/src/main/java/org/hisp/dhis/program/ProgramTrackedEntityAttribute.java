@@ -246,7 +246,7 @@ public class ProgramTrackedEntityAttribute
     }
     
     @JsonProperty
-    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    @JacksonXmlProperty( localName = "sortOrder", namespace = DxfNamespaces.DXF_2_0 )
     public Integer getSortOrder()
     {
         return sortOrder;
