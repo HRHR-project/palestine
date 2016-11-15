@@ -44,6 +44,7 @@ import org.hisp.dhis.analytics.Rectangle;
 public interface EventAnalyticsService
 {    
     String ITEM_EVENT = "psi";
+    String ITEM_TRACKED_ENTITY_INSTANCE = "tei";
     String ITEM_PROGRAM_STAGE = "ps";
     String ITEM_EXECUTION_DATE = "eventdate";
     String ITEM_LONGITUDE = "longitude";

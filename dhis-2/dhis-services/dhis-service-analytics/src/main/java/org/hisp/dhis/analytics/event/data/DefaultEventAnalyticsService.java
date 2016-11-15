@@ -258,6 +258,7 @@ public class DefaultEventAnalyticsService
         // ---------------------------------------------------------------------
 
         grid.addHeader( new GridHeader( ITEM_EVENT, "Event", String.class.getName(), false, true ) );
+        grid.addHeader( new GridHeader( ITEM_TRACKED_ENTITY_INSTANCE, "ProgramStageInstance", String.class.getName(), false, true ) );
         grid.addHeader( new GridHeader( ITEM_PROGRAM_STAGE, "Program stage", String.class.getName(), false, true ) );
         grid.addHeader( new GridHeader( ITEM_EXECUTION_DATE, "Event date", String.class.getName(), false, true ) );
         grid.addHeader( new GridHeader( ITEM_LONGITUDE, "Longitude", String.class.getName(), false, true ) );
