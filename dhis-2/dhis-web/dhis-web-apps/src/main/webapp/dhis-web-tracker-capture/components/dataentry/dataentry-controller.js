@@ -1132,7 +1132,8 @@ trackerCapture.controller('DataEntryController',
                             $scope.showDataEntry(newEvent, true);
 
                             //custom code for folkehelsa. Open modal if event-stage is previous pregnancies and tableedit-mode is form only
-                            if(($scope.currentEvent.programStage === 'PUZaKR0Jh2k' || $scope.currentEvent.programStage === 'bO5aSsPeB4A') 
+                            if(($scope.currentEvent.programStage === 'PUZaKR0Jh2k' || $scope.currentEvent.programStage === 'bO5aSsPeB4A'
+                                    || $scope.currentEvent.programStage === 'uOGkguF3MCs') 
                                     && $scope.tableEditMode === $scope.tableEditModes.form){
                                 $scope.openEventEditFormModal($scope.currentEvent);
                             }
@@ -1415,7 +1416,8 @@ trackerCapture.controller('DataEntryController',
         }
         else if ($scope.currentStage.displayEventsInTable 
                 || $scope.currentStage.id === 'PUZaKR0Jh2k'
-                 || $scope.currentStage.id === 'bO5aSsPeB4A') {
+                 || $scope.currentStage.id === 'bO5aSsPeB4A'
+                 || $scope.currentStage.id === 'uOGkguF3MCs') {
             if($scope.reSortStageEvents === true){
                 sortStageEvents($scope.currentStage);            
                 if($scope.eventsByStage.hasOwnProperty($scope.currentStage.id)){
@@ -2383,7 +2385,8 @@ trackerCapture.controller('DataEntryController',
                 $scope.resetStageErrorInEventLayout();
                 if(angular.isDefined($scope.bottomLineItems) && angular.isDefined($scope.bottomLineItems[$scope.currentEvent.programStage]) 
                         && $scope.currentEvent.programStage !== "PUZaKR0Jh2k" 
-                        && $scope.currentEvent.programStage !== "bO5aSsPeB4A"){
+                        && $scope.currentEvent.programStage !== "bO5aSsPeB4A"
+                        && $scope.currentEvent.programStage !== "uOGkguF3MCs"){
                     $scope.deSelectCurrentEvent();
                 }
                 //---
