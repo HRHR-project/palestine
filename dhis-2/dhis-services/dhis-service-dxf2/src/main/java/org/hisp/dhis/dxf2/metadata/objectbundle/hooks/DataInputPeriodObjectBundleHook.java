@@ -1,5 +1,4 @@
 package org.hisp.dhis.dxf2.metadata.objectbundle.hooks;
-
 /*
  * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
@@ -29,49 +28,50 @@ package org.hisp.dhis.dxf2.metadata.objectbundle.hooks;
  */
 
 import org.hisp.dhis.common.IdentifiableObject;
+import org.hisp.dhis.dataset.DataInputPeriod;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
-import org.hisp.dhis.period.PeriodType;
-import org.hisp.dhis.validation.ValidationRule;
+import org.hisp.dhis.period.Period;
+import org.hisp.dhis.period.PeriodService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * @author Morten Olav Hansen <mortenoh@gmail.com>
+ * @author Stian Sandvold
  */
-public class ValidationRuleObjectBundleHook
+public class DataInputPeriodObjectBundleHook
     extends AbstractObjectBundleHook
 {
+    @Autowired
+    PeriodService periodService;
+
     @Override
     public void preCreate( IdentifiableObject object, ObjectBundle bundle )
     {
-        if ( !ValidationRule.class.isInstance( object ) )
+        if ( !DataInputPeriod.class.isInstance( object ) )
         {
             return;
         }
 
-        ValidationRule validationRule = (ValidationRule) object;
-
-        if ( validationRule.getPeriodType() != null )
-        {
-            PeriodType periodType = bundle.getPreheat().getPeriodTypeMap()
-                .get( validationRule.getPeriodType().getName() );
-            validationRule.setPeriodType( periodType );
-        }
+        setPeriod(object);
     }
 
     @Override
     public void preUpdate( IdentifiableObject object, IdentifiableObject persistedObject, ObjectBundle bundle )
     {
-        if ( !ValidationRule.class.isInstance( object ) )
+        if ( !DataInputPeriod.class.isInstance( object ) )
         {
             return;
         }
 
-        ValidationRule validationRule = (ValidationRule) object;
+        setPeriod(object);
+    }
 
-        if ( validationRule.getPeriodType() != null )
-        {
-            PeriodType periodType = bundle.getPreheat().getPeriodTypeMap()
-                .get( validationRule.getPeriodType().getName() );
-            validationRule.setPeriodType( periodType );
-        }
+    private void setPeriod( IdentifiableObject object )
+    {
+        DataInputPeriod dataInputPeriod = (DataInputPeriod) object;
+
+        Period period = periodService.getPeriod( dataInputPeriod.getPeriod().getIsoDate() );
+
+        dataInputPeriod.setPeriod( period );
+        sessionFactory.getCurrentSession().save( period );
     }
 }

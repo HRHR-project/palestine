@@ -1,7 +1,7 @@
 package org.hisp.dhis.dxf2.metadata.objectbundle.hooks;
 
 /*
- * Copyright (c) 2004-2016, University of Oslo
+ * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,10 +35,14 @@ import org.hisp.dhis.common.BaseIdentifiableObject;
 import org.hisp.dhis.common.IdentifiableObject;
 import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
 import org.hisp.dhis.schema.Schema;
+import org.hisp.dhis.user.User;
+import org.hisp.dhis.user.UserAccess;
 import org.hisp.dhis.user.UserGroup;
 import org.hisp.dhis.user.UserGroupAccess;
 import org.springframework.core.annotation.Order;
 import org.springframework.util.StringUtils;
+
+import java.util.Iterator;
 
 /**
  * @author Morten Olav Hansen <mortenoh@gmail.com>
@@ -55,6 +59,7 @@ public class IdentifiableObjectBundleHook extends AbstractObjectBundleHook
         Session session = sessionFactory.getCurrentSession();
         handleAttributeValues( session, identifiableObject, bundle, schema );
         handleUserGroupAccesses( session, identifiableObject, bundle, schema );
+        handleUserAccesses( session, identifiableObject, bundle, schema );
         handleObjectTranslations( session, identifiableObject, bundle, schema );
     }
 
@@ -67,6 +72,7 @@ public class IdentifiableObjectBundleHook extends AbstractObjectBundleHook
         Session session = sessionFactory.getCurrentSession();
         handleAttributeValues( session, object, bundle, schema );
         handleUserGroupAccesses( session, object, bundle, schema );
+        handleUserAccesses( session, object, bundle, schema );
         handleObjectTranslations( session, object, bundle, schema );
     }
 
@@ -74,14 +80,30 @@ public class IdentifiableObjectBundleHook extends AbstractObjectBundleHook
     {
         if ( !schema.havePersistedProperty( "attributeValues" ) ) return;
 
-        for ( AttributeValue attributeValue : identifiableObject.getAttributeValues() )
+        Iterator<AttributeValue> iterator = identifiableObject.getAttributeValues().iterator();
+
+        while ( iterator.hasNext() )
         {
+            AttributeValue attributeValue = iterator.next();
+
             // if value null or empty, just skip it
-            if ( StringUtils.isEmpty( attributeValue.getValue() ) ) continue;
+            if ( StringUtils.isEmpty( attributeValue.getValue() ) )
+            {
+                iterator.remove();
+                continue;
+            }
 
             Attribute attribute = bundle.getPreheat().get( bundle.getPreheatIdentifier(), attributeValue.getAttribute() );
+
+            if ( attribute == null )
+            {
+                iterator.remove();
+                continue;
+            }
+
             attributeValue.setAttribute( attribute );
             session.save( attributeValue );
+            session.flush();
         }
     }
 
@@ -95,11 +117,51 @@ public class IdentifiableObjectBundleHook extends AbstractObjectBundleHook
             return;
         }
 
-        for ( UserGroupAccess userGroupAccess : identifiableObject.getUserGroupAccesses() )
+        Iterator<UserGroupAccess> userGroupAccessIterator = identifiableObject.getUserGroupAccesses().iterator();
+
+        while ( userGroupAccessIterator.hasNext() )
         {
+            UserGroupAccess userGroupAccess = userGroupAccessIterator.next();
             UserGroup userGroup = bundle.getPreheat().get( bundle.getPreheatIdentifier(), userGroupAccess.getUserGroup() );
-            userGroupAccess.setUserGroup( userGroup );
-            session.save( userGroupAccess );
+
+            if ( userGroup != null )
+            {
+                userGroupAccess.setUserGroup( userGroup );
+                session.save( userGroupAccess );
+            }
+            else
+            {
+                userGroupAccessIterator.remove();
+            }
+        }
+    }
+
+    private void handleUserAccesses( Session session, IdentifiableObject identifiableObject, ObjectBundle bundle, Schema schema )
+    {
+        if ( !schema.havePersistedProperty( "userAccesses" ) ) return;
+
+        if ( bundle.isSkipSharing() )
+        {
+            identifiableObject.getUserAccesses().clear();
+            return;
+        }
+
+        Iterator<UserAccess> userAccessIterator = identifiableObject.getUserAccesses().iterator();
+
+        while ( userAccessIterator.hasNext() )
+        {
+            UserAccess userAccess = userAccessIterator.next();
+            User user = bundle.getPreheat().get( bundle.getPreheatIdentifier(), userAccess.getUser() );
+
+            if ( user != null )
+            {
+                userAccess.setUser( user );
+                session.save( userAccess );
+            }
+            else
+            {
+                userAccessIterator.remove();
+            }
         }
     }
 
