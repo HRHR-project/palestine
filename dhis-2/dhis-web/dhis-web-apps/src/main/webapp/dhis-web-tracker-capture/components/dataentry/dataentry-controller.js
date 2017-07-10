@@ -2189,7 +2189,7 @@ trackerCapture.controller('DataEntryController',
             modalOptions = {
                 actionButtonText: 'OK',
                 headerText: 'Event locked',
-                bodyText: 'event is locked. Contact system administrator to reopen'
+                bodyText: 'Event is locked. Contact system administrator to reopen'
             };
             return ModalService.showModal({},modalOptions);
         }
