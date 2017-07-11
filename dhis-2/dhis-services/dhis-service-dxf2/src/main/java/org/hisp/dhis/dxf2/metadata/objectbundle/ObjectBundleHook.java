@@ -1,7 +1,7 @@
-package org.hisp.dhis.dxf2.metadata.objectbundle.hooks;
+package org.hisp.dhis.dxf2.metadata.objectbundle;
 
 /*
- * Copyright (c) 2004-2016, University of Oslo
+ * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,30 +29,86 @@ package org.hisp.dhis.dxf2.metadata.objectbundle.hooks;
  */
 
 import org.hisp.dhis.common.IdentifiableObject;
-import org.hisp.dhis.dxf2.metadata.objectbundle.ObjectBundle;
+import org.hisp.dhis.feedback.ErrorReport;
 
 import java.util.List;
 
 /**
+ * Contains hooks for object bundle commit phase.
+ *
  * @author Morten Olav Hansen <mortenoh@gmail.com>
  */
 public interface ObjectBundleHook
 {
+    /**
+     * Hook to run custom validation code. Run before any other validation.
+     *
+     * @param object Object to validate
+     * @param bundle Current validation phase bundle
+     * @return Empty list if not errors, if errors then populated with one or more ErrorReports
+     */
+    <T extends IdentifiableObject> List<ErrorReport> validate( T object, ObjectBundle bundle );
+
+    /**
+     * Run before commit phase has started.
+     *
+     * @param bundle Current commit phase bundle
+     */
     void preImport( ObjectBundle bundle );
 
+    /**
+     * Run after commit phase has finished.
+     *
+     * @param bundle Current commit phase bundle
+     */
     void postImport( ObjectBundle bundle );
 
+    /**
+     * Run before a type import has started. I.e. run before importing orgUnits, dataElements, etc.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void preTypeImport( Class<? extends IdentifiableObject> klass, List<T> objects, ObjectBundle bundle );
 
+    /**
+     * Run after a type import has finished. I.e. run before importing orgUnits, dataElements, etc.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void postTypeImport( Class<? extends IdentifiableObject> klass, List<T> objects, ObjectBundle bundle );
-    
+
+    /**
+     * Run before object has been created.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void preCreate( T object, ObjectBundle bundle );
 
+    /**
+     * Run after object has been created.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void postCreate( T persistedObject, ObjectBundle bundle );
 
+    /**
+     * Run before object has been updated.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void preUpdate( T object, T persistedObject, ObjectBundle bundle );
 
+    /**
+     * Run after object has been updated.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void postUpdate( T persistedObject, ObjectBundle bundle );
 
+    /**
+     * Run before object has been deleted.
+     *
+     * @param bundle Current commit phase bundle
+     */
     <T extends IdentifiableObject> void preDelete( T persistedObject, ObjectBundle bundle );
 }
