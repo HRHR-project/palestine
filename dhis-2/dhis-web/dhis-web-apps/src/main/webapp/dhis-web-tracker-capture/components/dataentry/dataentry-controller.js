@@ -2318,17 +2318,12 @@ trackerCapture.controller('DataEntryController',
             return false;
         }
         
-        if(userRoles){
-            angular.forEach(userRoles,function(role){
-                if(role.authorities){
-                    angular.forEach(role.authorities, function(authority){
-                        if(authority === 'ALL'){
-                            return false;
-                        }
-                    });
-                }
-            });
+        if(userRoles.some(function(role){return role.authorities ? 
+            role.authorities.some( function(authority){return authority === 'ALL';}) :
+            false;})) {
+            return false;
         }
+        
         if($scope.currentEvent.status === 'COMPLETED'){
             var now = moment();
             var completedDate = moment($scope.currentEvent.completedDate);
