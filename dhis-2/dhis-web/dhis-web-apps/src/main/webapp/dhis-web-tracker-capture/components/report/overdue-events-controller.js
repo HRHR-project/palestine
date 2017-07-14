@@ -53,7 +53,6 @@ trackerCapture.controller('OverdueEventsController',
     $scope.$watch('selectedOrgUnit', function() {
         if( angular.isObject($scope.selectedOrgUnit)){       
             $scope.loadPrograms($scope.selectedOrgUnit);
-            console.log($scope.selectedOrgUnit);
         }
     });
     

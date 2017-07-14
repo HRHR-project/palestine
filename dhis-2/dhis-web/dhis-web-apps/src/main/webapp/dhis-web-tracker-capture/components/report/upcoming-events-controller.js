@@ -57,7 +57,6 @@ trackerCapture.controller('UpcomingEventsController',
             //Resets select when OrgUnit is changed.
             resetProgramSelect();
             $scope.loadPrograms($scope.selectedOrgUnit);
-            console.log($scope.selectedOrgUnit);
         }
     });
     
