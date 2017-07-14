@@ -51,21 +51,32 @@ trackerCapture.controller('OverdueEventsController',
     
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
-        $scope.reportFinished = false;
-        $scope.reportStarted = false;        
-        if( angular.isObject($scope.selectedOrgUnit)){
-            $scope.loadPrograms();
+        if( angular.isObject($scope.selectedOrgUnit)){       
+            $scope.loadPrograms($scope.selectedOrgUnit);
+            console.log($scope.selectedOrgUnit);
         }
     });
     
     //load programs associated with the selected org unit.
-    $scope.loadPrograms = function() {
-        if (angular.isObject($scope.selectedOrgUnit)){
-            ProgramFactory.getAllForUser($scope.selectedProgram).then(function(response){
+    $scope.loadPrograms = function(orgUnit) {
+        $scope.selectedOrgUnit = orgUnit;
+        
+        if (angular.isObject($scope.selectedOrgUnit)) {   
+            
+            ProgramFactory.getProgramsByOu($scope.selectedOrgUnit, $scope.selectedProgram).then(function(response){
                 $scope.programs = response.programs;
                 $scope.selectedProgram = response.selectedProgram;
+                if($scope.selectedProgram && $scope.selectedProgram.programStages){
+                    angular.forEach($scope.selectedProgram.programStages, function(stage){
+                        $scope.programStagesById[stage.id] = stage;
+                    });
+                }
+                $scope.model.selectedProgram = $scope.selectedProgram;
+                $scope.trackedEntityList = null;
+                $scope.selectedSearchMode = $scope.searchMode.listAll;
+                $scope.processAttributes();
             });
-        }
+        }        
     };
 
     //Added to make Select2 function for missed event.
