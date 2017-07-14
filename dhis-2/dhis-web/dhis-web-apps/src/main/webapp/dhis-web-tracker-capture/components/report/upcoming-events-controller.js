@@ -46,9 +46,16 @@ trackerCapture.controller('UpcomingEventsController',
     //Paging
     $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};
     
+    //TODO: Add logic to update the select when OrgUnit is changed.
+    function resetProgramSelect(){
+
+    };
+    
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
         if( angular.isObject($scope.selectedOrgUnit)){
+            //Resets select when OrgUnit is changed.
+            resetProgramSelect();
             $scope.loadPrograms($scope.selectedOrgUnit);
             console.log($scope.selectedOrgUnit);
         }
