@@ -40,11 +40,36 @@
     </div>
     <!-- top bar ends -->
 
+    <!--- selected org unit begins //Can maybe be removed-->
+    <input type="text" selected-org-unit ng-model="selectedOrgUnit.displayName" ng-hide=true>
+    <!--- selected org unit ends  -->
+
+    <!-- program select begins-->
+    <div class="row" ng-cloak>
+        <div class="col-md-4 small-vertical-spacing hideInPrint">
+                  <label>Selected program:</label>      
+            <ui-select ng-model="model.selectedProgram" 
+                        theme="select2" 
+                        on-select="setSelectedProgram(model.selectedProgram)"
+                        style="width:100%;">
+                <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{programs.length > 0 ? 'please_select_a_program' : 'no_program_exists'| translate}}">{{$select.selected.displayName  || $select.selected}}</ui-select-match>
+                <ui-select-choices  repeat="program in programs | orderBy: 'name' | filter: $select.search">
+                    <span ng-bind-html="program.displayName | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+            
+    <div class="vertical-spacing" ng-if="emptySearchAttribute || !searchText && emptySearchText">
+        <div class="alert alert-warning">{{'search_input_required'| translate}}</div>
+    </div>
+    <!-- program select ends -->
+
     <!--input form begins -->
     <form name="outerForm" novalidate>               
         <div class="row">
             <div class="col-sm-8 col-md-6">
-                <!-- Merge note: hidden in palestine -->
+                <!-- Merge note: hidden in palestine // Remove ng-hide to show the old progam select -->
                 <table class="table-borderless table-striped" ng-hide="true">
                     <tr>
                         <td>{{'org_unit' | translate}}</td>
@@ -144,7 +169,7 @@
 
     <!-- upcoming events list begins -->
     <div ng-if="reportFinished">
-        <div ng-switch="upcomingEvents.length">                    
+        <div ng-switch="upcomingEvents.length">                
             <div ng-switch-when="undefined">
                 <div class="alert alert-warning vertical-spacing">
                     {{'no_data_found'| translate}}

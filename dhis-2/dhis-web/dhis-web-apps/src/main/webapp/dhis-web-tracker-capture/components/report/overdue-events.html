@@ -40,6 +40,27 @@
     </div>
     <!-- top bar ends -->
 
+    <!-- program select begins-->
+    <div class="row" ng-cloak>
+        <div class="col-md-4 small-vertical-spacing hideInPrint">
+            <label>Selected program:</label>
+            <ui-select ng-model="selectedProgram" 
+                        theme="select2" 
+                        on-select="setSelectedProgram(selectedProgram)"
+                        style="width:100%;">
+                <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{programs.length > 0 ? 'please_select_a_program' : 'no_program_exists'| translate}}">{{$select.selected.displayName  || $select.selected}}</ui-select-match>
+                <ui-select-choices  repeat="program in programs | orderBy: 'name' | filter: $select.search">
+                    <span ng-bind-html="program.displayName | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+            
+    <div class="vertical-spacing" ng-if="emptySearchAttribute || !searchText && emptySearchText">
+        <div class="alert alert-warning">{{'search_input_required'| translate}}</div>
+    </div>
+    <!-- program select ends -->
+
     <!--input form begins -->
     <form name="outerForm" novalidate>               
         <div class="row">

@@ -67,6 +67,11 @@ trackerCapture.controller('OverdueEventsController',
             });
         }
     };
+
+    //Added to make Select2 function for missed event and upcoming event.
+    $scope.setSelectedProgram = function(program){ 
+        $scope.selectedProgram = program;            
+    };
     
     //watch for selection of program
     $scope.$watch('selectedProgram', function() {   
