@@ -63,7 +63,7 @@ trackerCapture.controller('UpcomingEventsController',
         }        
     };
     
-    //Added to make Select2 function for missed event and upcoming event.
+    //Added to make Select2 function upcoming event.
     $scope.setSelectedProgram = function(program){ 
         $scope.selectedProgram = program;            
     };
