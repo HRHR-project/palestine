@@ -112,7 +112,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-8 col-md-6">
+            <!-- z-index fixes a bug where if the screen size was a particular size,
+                the col with buttons would be placed on top of the date picker,
+                making it imposible to select dates. -->
+            <div class="col-sm-8 col-md-6" style="z-index: 1">
                 <table class="table-borderless">
                     <tr>
                         <td>
@@ -133,12 +136,13 @@
                     </tr>
                 </table>                
             </div>
-            <div class="col-md-6 trim">
-                <button type="button" class="btn btn-primary" ng-click="generateReport()" ng-disabled="!selectedProgram">{{'go'| translate}}</button>
+            <div class="col-md-6 trim" style="z-index: 0">
+                <button type="button" style="margin-top: 1px" class="btn btn-primary" ng-click="generateReport()" ng-disabled="!selectedProgram">{{'go'| translate}}</button>
                 <button type="button"
                         class="btn btn-success small-horizonal-spacing"
                         ng-if="upcomingEvents.length > 0"
-                        onclick="javascript:window.print()">
+                        onclick="javascript:window.print()"
+                        style="margin-left: 0; margin-top: 1px">
                     {{'print'| translate}}
                 </button>
                 <button type="button" 
@@ -146,7 +150,8 @@
                         ng-if="upcomingEvents.length > 0"
                         ng-csv="generateReportData()"
                         csv-header="generateReportHeader()"
-                        filename="upcomingEvents.csv">
+                        filename="upcomingEvents.csv"
+                        style="margin-left: 0; margin-top: 1px">
                     {{'excel_export'| translate}}
                 </button>
             </div>

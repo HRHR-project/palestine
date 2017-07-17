@@ -56,8 +56,9 @@
         <input type="text" selected-org-unit ng-model="selectedOrgUnit.displayName" ng-hide=true>
         <!--- selected org unit ends  -->
 
-        <!--- search and registration menu begins -->        
-        <div class="row" ng-if="selectedProgram" ng-cloak>
+        <!-- search and registration menu begins -->
+        <!-- removed ng-if="selectedOrgUnit.displayName" from div below to make the programselecter load on start -->
+        <div class="row" ng-cloak>
             <!-- Was commented out -->
             <div class="col-md-4 small-vertical-spacing hideInPrint">
                 <label>Selected program:</label>
@@ -65,7 +66,7 @@
                         theme="select2" 
                         on-select="getProgramAttributes(model.selectedProgram)"
                         style="width:100%;">
-                    <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{'select_or_search' | translate}}">{{$select.selected.displayName  || $select.selected}}</ui-select-match>
+                    <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{programs.length > 0 ? 'please_select_a_program' : 'no_program_exists'| translate}}">{{$select.selected.displayName  || $select.selected}}</ui-select-match>
                     <ui-select-choices  repeat="program in programs | orderBy: 'name' | filter: $select.search | limitTo:maxOptionSize">
                         <span ng-bind-html="program.displayName | highlight: $select.search"></span>
                     </ui-select-choices>
@@ -147,6 +148,7 @@
                     -->
                 </div>
             </div>
+            <div>
             <ng-include ng-if="selectedContentView && !showRegistrationDiv" src="selectedContentView.template"></ng-include>
         </div>
     </div>
