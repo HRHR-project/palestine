@@ -1,7 +1,7 @@
 package org.hisp.dhis.schema.descriptors;
 
 /*
- * Copyright (c) 2004-2016, University of Oslo
+ * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,10 +51,10 @@ public class ProgramIndicatorGroupSchemaDescriptor implements SchemaDescriptor
     {
         Schema schema = new Schema( ProgramIndicatorGroup.class, SINGULAR, PLURAL );
         schema.setRelativeApiEndpoint( API_ENDPOINT );
-        schema.setOrder( 1500 );
+        schema.setOrder( 1600 );
 
         schema.getAuthorities().add( new Authority( AuthorityType.CREATE,
-            Lists.newArrayList( "F_PROGRAM_INDICATOR_GROUP_PUBLIC_ADD", " F_PROGRAM_INDICATOR_GROUP_PRIVATE_ADD" ) ) );
+            Lists.newArrayList( "F_PROGRAM_INDICATOR_GROUP_PUBLIC_ADD", "F_PROGRAM_INDICATOR_GROUP_PRIVATE_ADD" ) ) );
         schema.getAuthorities().add( new Authority( AuthorityType.DELETE, Lists.newArrayList( "F_PROGRAM_INDICATOR_GROUP_DELETE" ) ) );
 
         return schema;

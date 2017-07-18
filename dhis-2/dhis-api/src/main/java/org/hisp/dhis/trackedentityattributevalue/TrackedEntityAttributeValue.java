@@ -1,7 +1,7 @@
 package org.hisp.dhis.trackedentityattributevalue;
 
 /*
- * Copyright (c) 2004-2016, University of Oslo
+ * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -72,6 +72,8 @@ public class TrackedEntityAttributeValue
      * if attribute is set or not.
      */
     private String value;
+
+    private String storedBy;
 
     // -------------------------------------------------------------------------
     // Transient properties
@@ -306,6 +308,18 @@ public class TrackedEntityAttributeValue
         valueIsSet = true;
 
         this.value = value;
+    }
+
+    @JsonProperty
+    @JacksonXmlProperty( namespace = DxfNamespaces.DXF_2_0 )
+    public String getStoredBy()
+    {
+        return storedBy;
+    }
+
+    public void setStoredBy( String storedBy )
+    {
+        this.storedBy = storedBy;
     }
 
     @JsonProperty( "trackedEntityAttribute" )

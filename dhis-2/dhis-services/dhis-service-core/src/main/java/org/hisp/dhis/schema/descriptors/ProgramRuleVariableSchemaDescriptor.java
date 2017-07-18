@@ -1,7 +1,7 @@
 package org.hisp.dhis.schema.descriptors;
 
 /*
- * Copyright (c) 2004-2016, University of Oslo
+ * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -53,8 +53,8 @@ public class ProgramRuleVariableSchemaDescriptor implements SchemaDescriptor
         schema.setRelativeApiEndpoint( API_ENDPOINT );
         schema.setOrder( 1600 );
 
-        schema.getAuthorities().add( new Authority( AuthorityType.CREATE, Lists.newArrayList( "F_PROGRAMRULEVARIABLE_ADD" ) ) );
-        schema.getAuthorities().add( new Authority( AuthorityType.DELETE, Lists.newArrayList( "F_PROGRAMRULEVARIABLE_DELETE" ) ) );
+        schema.getAuthorities().add( new Authority( AuthorityType.CREATE, Lists.newArrayList( "F_PROGRAM_RULE_MANAGEMENT" ) ) );
+        schema.getAuthorities().add( new Authority( AuthorityType.DELETE, Lists.newArrayList( "F_PROGRAM_RULE_MANAGEMENT" ) ) );
 
         return schema;
     }

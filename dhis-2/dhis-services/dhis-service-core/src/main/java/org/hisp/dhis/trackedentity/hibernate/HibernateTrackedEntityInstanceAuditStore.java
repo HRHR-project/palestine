@@ -41,10 +41,10 @@ public class HibernateTrackedEntityInstanceAuditStore
     implements TrackedEntityInstanceAuditStore
 {
     @Override
-    public int save( TrackedEntityInstanceAudit object )
+    public void save( TrackedEntityInstanceAudit object )
     {
         // TODO Auto-generated method stub
-        return super.save( object );
+        super.save( object );
     }
 
     @Override

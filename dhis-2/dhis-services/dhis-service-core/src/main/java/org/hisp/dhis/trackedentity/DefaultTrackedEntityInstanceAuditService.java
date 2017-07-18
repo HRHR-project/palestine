@@ -89,7 +89,7 @@ public class DefaultTrackedEntityInstanceAuditService implements TrackedEntityIn
     private void addIfNotExisting( TrackedEntityInstanceAudit trackedEntityInstanceAudit ) 
     {
         if ( !trackedEntityInstanceAuditStore.exists( trackedEntityInstanceAudit ) ) {
-            int id = trackedEntityInstanceAuditStore.save( trackedEntityInstanceAudit );
+            trackedEntityInstanceAuditStore.save( trackedEntityInstanceAudit );
         }
     }
 

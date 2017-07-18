@@ -107,6 +107,8 @@
                     <tbody id="list">       
                         <tr ng-repeat="de in section.programStageDataElements" ng-if="!isHidden(de.dataElement.id) || printMode === true">
                             <td>
+                                <span>{{de.dataElement.id.id}}</span>
+                                <span>{{prStDes[de.dataElement.id].formName}}</span>
                                 <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>       
                                 <span ng-if="prStDes[de.dataElement.id].compulsory" class="required">*</span>
                                 <span class="hideInPrint">
