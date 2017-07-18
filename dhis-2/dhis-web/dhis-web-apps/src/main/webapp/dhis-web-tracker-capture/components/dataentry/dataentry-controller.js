@@ -631,10 +631,6 @@ trackerCapture.controller('DataEntryController',
                     //end for folkehelsa--------------------------------------------------------------------------------------------------------
                     
                     angular.forEach(stage.programStageDataElements, function (prStDe) {
-                        if(prStDe.dataElement.id === 'yoSsYjSCnzv')
-                        {
-                            debugger;
-                        }
                         $scope.prStDes[prStDe.dataElement.id] = prStDe;
                         if(prStDe.allowProvidedElsewhere){
                             $scope.allowProvidedElsewhereExists[stage.id] = true;

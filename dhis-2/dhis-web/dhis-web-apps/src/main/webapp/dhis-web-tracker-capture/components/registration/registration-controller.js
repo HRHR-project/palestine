@@ -184,8 +184,8 @@ trackerCapture.controller('RegistrationController',
     };
     
     var performRegistration = function(destination){
-        RegistrationService.registerOrUpdate($scope.tei, $scope.optionSets, $scope.attributesById).then(function(registrationResponse){
-            var reg = registrationResponse.response ? registrationResponse.response : {};            
+        RegistrationService.registerOrUpdate($scope.tei, $scope.optionSets, $scope.attributesById).then(function(regResponse){
+            var reg = regResponse.response && regResponse.response.importSummaries && regResponse.response.importSummaries[0] ? regResponse.response.importSummaries[0] : {};
             if(reg.reference && reg.status === 'SUCCESS'){                
                 $scope.tei.trackedEntityInstance = reg.reference;
                 
@@ -244,7 +244,7 @@ trackerCapture.controller('RegistrationController',
             else{//update/registration has failed
                 var dialogOptions = {
                         headerText: $scope.tei && $scope.tei.trackedEntityInstance ? 'update_error' : 'registration_error',
-                        bodyText: registrationResponse.message
+                        bodyText: regResponse.message
                     };
                 DialogService.showDialog({}, dialogOptions);
                 return;
