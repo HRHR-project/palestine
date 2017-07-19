@@ -40,12 +40,37 @@
     </div>
     <!-- top bar ends -->
 
+    <!--- selected org unit begins //Can maybe be removed-->
+    <input type="text" selected-org-unit ng-model="selectedOrgUnit.displayName" ng-hide=true>
+    <!--- selected org unit ends  -->
+
+    <!-- program select begins-->
+    <div class="row" ng-cloak>
+        <div class="col-md-4 small-vertical-spacing hideInPrint">
+                  <label>Selected program:</label>      
+            <ui-select ng-model="model.selectedProgram" 
+                        theme="select2" 
+                        on-select="setSelectedProgram(model.selectedProgram)"
+                        style="width:100%;">
+                <ui-select-match allow-clear="true" class="form-control-ui-select" placeholder="{{programs.length > 0 ? 'please_select_a_program' : 'no_program_exists'| translate}}">{{$select.selected.displayName  || $select.selected}}</ui-select-match>
+                <ui-select-choices  repeat="program in programs | orderBy: 'name' | filter: $select.search">
+                    <span ng-bind-html="program.displayName | highlight: $select.search"></span>
+                </ui-select-choices>
+            </ui-select>
+        </div>
+    </div>
+            
+    <div class="vertical-spacing" ng-if="emptySearchAttribute || !searchText && emptySearchText">
+        <div class="alert alert-warning">{{'search_input_required'| translate}}</div>
+    </div>
+    <!-- program select ends -->
+
     <!--input form begins -->
     <form name="outerForm" novalidate>               
         <div class="row">
             <div class="col-sm-8 col-md-6">
-                <!-- Merge note: hidden in palestine -->
-                <table class="table-borderless table-striped" ng-hide="false">
+                <!-- Merge note: hidden in palestine // Remove ng-hide to show the old progam select -->
+                <table class="table-borderless table-striped" ng-hide="true">
                     <tr>
                         <td>{{'org_unit' | translate}}</td>
                         <td>
@@ -87,7 +112,10 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-8 col-md-6">
+            <!-- z-index fixes a bug where if the screen size was a particular size,
+                the col with buttons would be placed on top of the date picker,
+                making it imposible to select dates. -->
+            <div class="col-sm-8 col-md-6" style="z-index: 1">
                 <table class="table-borderless">
                     <tr>
                         <td>
@@ -108,12 +136,13 @@
                     </tr>
                 </table>                
             </div>
-            <div class="col-md-6 trim">
-                <button type="button" class="btn btn-primary" ng-click="generateReport()" ng-disabled="!selectedProgram">{{'go'| translate}}</button>
+            <div class="col-md-6 trim" style="z-index: 0">
+                <button type="button" style="margin-top: 1px" class="btn btn-primary" ng-click="generateReport()" ng-disabled="!selectedProgram">{{'go'| translate}}</button>
                 <button type="button"
                         class="btn btn-success small-horizonal-spacing"
                         ng-if="upcomingEvents.length > 0"
-                        onclick="javascript:window.print()">
+                        onclick="javascript:window.print()"
+                        style="margin-left: 0; margin-top: 1px">
                     {{'print'| translate}}
                 </button>
                 <button type="button" 
@@ -121,7 +150,8 @@
                         ng-if="upcomingEvents.length > 0"
                         ng-csv="generateReportData()"
                         csv-header="generateReportHeader()"
-                        filename="upcomingEvents.csv">
+                        filename="upcomingEvents.csv"
+                        style="margin-left: 0; margin-top: 1px">
                     {{'excel_export'| translate}}
                 </button>
             </div>
@@ -144,7 +174,7 @@
 
     <!-- upcoming events list begins -->
     <div ng-if="reportFinished">
-        <div ng-switch="upcomingEvents.length">                    
+        <div ng-switch="upcomingEvents.length">                
             <div ng-switch-when="undefined">
                 <div class="alert alert-warning vertical-spacing">
                     {{'no_data_found'| translate}}

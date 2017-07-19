@@ -46,23 +46,47 @@ trackerCapture.controller('UpcomingEventsController',
     //Paging
     $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};
     
+    //TODO: Add logic to update the select when OrgUnit is changed.
+    function resetProgramSelect(){
+
+    };
+    
     //watch for selection of org unit from tree
     $scope.$watch('selectedOrgUnit', function() {
-        if( angular.isObject($scope.selectedOrgUnit)){            
-            $scope.loadPrograms();
+        if( angular.isObject($scope.selectedOrgUnit)){
+            //Resets select when OrgUnit is changed.
+            resetProgramSelect();
+            $scope.loadPrograms($scope.selectedOrgUnit);
         }
     });
     
     //load programs associated with the selected org unit.
-    $scope.loadPrograms = function() {
-        if (angular.isObject($scope.selectedOrgUnit)){
-            ProgramFactory.getAllForUser($scope.selectedProgram).then(function(response){
+    $scope.loadPrograms = function(orgUnit) {
+        $scope.selectedOrgUnit = orgUnit;
+        
+        if (angular.isObject($scope.selectedOrgUnit)) {   
+            
+            ProgramFactory.getProgramsByOu($scope.selectedOrgUnit, $scope.selectedProgram).then(function(response){
                 $scope.programs = response.programs;
                 $scope.selectedProgram = response.selectedProgram;
+                if($scope.selectedProgram && $scope.selectedProgram.programStages){
+                    angular.forEach($scope.selectedProgram.programStages, function(stage){
+                        $scope.programStagesById[stage.id] = stage;
+                    });
+                }
+                $scope.model.selectedProgram = $scope.selectedProgram;
+                $scope.trackedEntityList = null;
+                $scope.selectedSearchMode = $scope.searchMode.listAll;
+                $scope.processAttributes();
             });
         }        
     };
     
+    //Added to make Select2 function upcoming event.
+    $scope.setSelectedProgram = function(program){ 
+        $scope.selectedProgram = program;            
+    };
+
     //watch for selection of program
     $scope.$watchCollection('[selectedProgram, selectedOuMode]', function () {
         $scope.reportFinished = false;
