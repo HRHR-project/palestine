@@ -12,7 +12,7 @@ trackerCapture.controller('UpcomingEventsController',
                 CurrentSelection,
                 MetaDataFactory) {
     $scope.today = DateUtils.getToday();
-    
+    $scope.programStagesById ={};
     $scope.selectedOuMode = 'SELECTED';
     $scope.report = {};
     $scope.displayMode = {};

@@ -18,6 +18,7 @@ trackerCapture.controller('OverdueEventsController',
     $scope.selectedOuMode = 'SELECTED';
     $scope.report = {};
     $scope.displayMode = {};
+    $scope.programStagesById ={};
     $scope.printMode = false;
     $scope.backPath = '/'+ (($location.search()).returnview ?($location.search()).returnview : '');
     
