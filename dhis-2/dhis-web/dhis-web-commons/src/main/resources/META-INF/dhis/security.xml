@@ -426,6 +426,7 @@
         <value>F_ORGANISATIONUNIT_MOVE</value>
         <value>F_PREDICTOR_RUN</value>
         <value>F_SEND_EMAIL</value>
+        <value>F_TRACKED_ENTITY_COMMENT_ADD</value>
       </set>
     </property>
   </bean>
