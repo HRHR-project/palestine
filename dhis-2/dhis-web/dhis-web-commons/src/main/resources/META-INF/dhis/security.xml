@@ -427,6 +427,8 @@
         <value>F_PREDICTOR_RUN</value>
         <value>F_SEND_EMAIL</value>
         <value>F_TRACKED_ENTITY_COMMENT_ADD</value>
+        <value>F_DATAADMIN_LOCK</value>
+        <value>F_DATAADMIN_UNLOCK</value>
       </set>
     </property>
   </bean>
