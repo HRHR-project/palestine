@@ -185,7 +185,7 @@ trackerCapture.controller('RegistrationController',
     
     var performRegistration = function(destination){
         RegistrationService.registerOrUpdate($scope.tei, $scope.optionSets, $scope.attributesById).then(function(regResponse){
-            var reg = regResponse.response && regResponse.response.importSummaries && regResponse.response.importSummaries[0] ? regResponse.response.importSummaries[0] : {};
+            var reg = regResponse.response.responseType ==='ImportSummaries' ? regResponse.response.importSummaries[0] : regResponse.response.responseType === 'ImportSummary' ? regResponse.response : {};
             if(reg.reference && reg.status === 'SUCCESS'){                
                 $scope.tei.trackedEntityInstance = reg.reference;
                 
