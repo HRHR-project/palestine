@@ -57,7 +57,7 @@
         <!--- selected org unit ends  -->
 
         <!-- search and registration menu begins -->
-        <!-- removed ng-if="selectedOrgUnit.displayName" from div below to make the programselecter load on start -->
+        <!-- removed ng-if="selectedOrgUnit.displayName" from div below to make the program selecter load on start -->
         <div class="row" ng-cloak>
             <!-- Was commented out -->
             <div class="col-md-4 small-vertical-spacing hideInPrint">
@@ -119,7 +119,7 @@
         <!-- registration form ends -->        
 
         <!-- entity grid begins -->
-            <div class="row vertical-spacing">
+            <div class="row vertical-spacing" ng-if="model.selectedProgram">
                 <div class="col-sm-12">
                     <span ng-if='!showRegistrationDiv'>
                         <span class="btn-group">
