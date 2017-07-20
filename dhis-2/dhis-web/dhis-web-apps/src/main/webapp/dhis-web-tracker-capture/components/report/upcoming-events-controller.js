@@ -17,7 +17,9 @@ trackerCapture.controller('UpcomingEventsController',
     $scope.report = {};
     $scope.displayMode = {};
     $scope.printMode = false;
-    $scope.backPath = '/'+ (($location.search()).returnview ?($location.search()).returnview : ''); 
+    $scope.backPath = '/'+ (($location.search()).returnview ?($location.search()).returnview : '');
+
+    $scope.model = { selectedProgram: null};
     //get optionsets
     $scope.optionSets = CurrentSelection.getOptionSets();
     if(!$scope.optionSets){
@@ -62,37 +64,25 @@ trackerCapture.controller('UpcomingEventsController',
     
     //load programs associated with the selected org unit.
     $scope.loadPrograms = function(orgUnit) {
-        $scope.selectedOrgUnit = orgUnit;
-        
         if (angular.isObject($scope.selectedOrgUnit)) {   
-            
-            ProgramFactory.getProgramsByOu($scope.selectedOrgUnit, $scope.selectedProgram).then(function(response){
+            ProgramFactory.getProgramsByOu($scope.selectedOrgUnit, $scope.model.selectedProgram).then(function(response){
                 $scope.programs = response.programs;
-                $scope.selectedProgram = response.selectedProgram;
-                if($scope.selectedProgram && $scope.selectedProgram.programStages){
-                    angular.forEach($scope.selectedProgram.programStages, function(stage){
-                        $scope.programStagesById[stage.id] = stage;
-                    });
-                }
-                $scope.model.selectedProgram = $scope.selectedProgram;
-                $scope.trackedEntityList = null;
-                $scope.selectedSearchMode = $scope.searchMode.listAll;
-                $scope.processAttributes();
+                $scope.model.selectedProgram = response.selectedProgram;
             });
         }        
     };
     
     //Added to make Select2 function upcoming event.
     $scope.setSelectedProgram = function(program){ 
-        $scope.selectedProgram = program;            
+        $scope.model.selectedProgram = program;            
     };
 
     //watch for selection of program
-    $scope.$watchCollection('[selectedProgram, selectedOuMode]', function () {
+    $scope.$watchCollection('[model.selectedProgram, selectedOuMode]', function () {
         $scope.reportFinished = false;
         $scope.reportStarted = false;
         
-        if (angular.isObject($scope.selectedProgram)){
+        if (angular.isObject($scope.model.selectedProgram)){
             $scope.generateGridHeader();
         }
     });
@@ -101,7 +91,7 @@ trackerCapture.controller('UpcomingEventsController',
         
         //check for form validity
         $scope.outerForm.submitted = true;        
-        if( $scope.outerForm.$invalid || !$scope.selectedProgram){
+        if( $scope.outerForm.$invalid || !$scope.model.selectedProgram){
             return false;
         }
         
@@ -111,7 +101,7 @@ trackerCapture.controller('UpcomingEventsController',
         $scope.upcomingEvents = [];
         EventReportService.getEventReport($scope.selectedOrgUnit.id, 
                                         $scope.selectedOuMode, 
-                                        $scope.selectedProgram.id, 
+                                        $scope.model.selectedProgram.id, 
                                         DateUtils.formatFromUserToApi($scope.report.startDate), 
                                         DateUtils.formatFromUserToApi($scope.report.endDate), 
                                         'ACTIVE',
@@ -162,7 +152,7 @@ trackerCapture.controller('UpcomingEventsController',
     
     $scope.generateGridHeader = function(){
         
-        if (angular.isObject($scope.selectedProgram)){
+        if (angular.isObject($scope.model.selectedProgram)){
             
             $scope.programStages = [];
             $scope.sortColumn = {};
@@ -170,12 +160,12 @@ trackerCapture.controller('UpcomingEventsController',
             $scope.filterText = {};
             $scope.reverse = false;;
 
-            angular.forEach($scope.selectedProgram.programStages, function(stage){
+            angular.forEach($scope.model.selectedProgram.programStages, function(stage){
                 $scope.programStages[stage.id] = stage;
             });
 
             
-            AttributesFactory.getByProgram($scope.selectedProgram).then(function(atts){            
+            AttributesFactory.getByProgram($scope.model.selectedProgram).then(function(atts){            
                 var grid = TEIGridService.generateGridColumns(atts, $scope.selectedOuMode, true);
                 
                 $scope.gridColumns = [];
@@ -271,7 +261,7 @@ trackerCapture.controller('UpcomingEventsController',
     
     $scope.showDashboard = function(tei){
         $location.path('/dashboard').search({tei: tei,                                            
-                                            program: $scope.selectedProgram ? $scope.selectedProgram.id: null});
+                                            program: $scope.model.selectedProgram ? $scope.model.selectedProgram.id: null});
     };
     
     $scope.generateReportData = function(){
