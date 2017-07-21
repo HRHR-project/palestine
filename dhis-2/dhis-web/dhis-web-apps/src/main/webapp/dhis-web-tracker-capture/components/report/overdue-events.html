@@ -41,7 +41,7 @@
     <!-- top bar ends -->
 
     <!-- program select begins-->
-    <div class="row" ng-cloak>
+    <div class="row" ng-cloak ng-if="programs.length > 1">
         <div class="col-md-4 small-vertical-spacing hideInPrint">
             <label>Selected program:</label>
             <ui-select ng-model="model.selectedProgram" 

@@ -58,7 +58,7 @@
 
         <!-- search and registration menu begins -->
         <!-- removed ng-if="selectedOrgUnit.displayName" from div below to make the program selecter load on start -->
-        <div class="row" ng-cloak>
+        <div class="row" ng-cloak ng-if="programs.length > 1">
             <!-- Was commented out -->
             <div class="col-md-4 small-vertical-spacing hideInPrint">
                 <label>Selected program:</label>
