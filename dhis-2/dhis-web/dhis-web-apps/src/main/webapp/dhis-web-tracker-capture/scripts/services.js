@@ -1052,14 +1052,14 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
     return {     
         
         getEventsByStatus: function(entity, orgUnit, program, programStatus){   
-            var promise = $http.get( '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&orgUnit=' + orgUnit + '&program=' + program + '&programStatus=' + programStatus  + '&paging=false').then(function(response){
+            var promise = $http.get( '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&orgUnit=' + orgUnit + '&program=' + program + '&programStatus=' + programStatus  + '&skipPaging=true').then(function(response){
                 return response.data.events;
             });            
             return promise;
         },
         getEventsByProgram: function(entity, program){   
             
-            var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&paging=false';            
+            var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&skipPaging=true';            
             if(program){
                 url = url + '&program=' + program;
             }
@@ -1069,7 +1069,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             return promise;
         },
         getEventsByProgramStage: function(entity, programStage){
-          var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&paging=false'; 
+          var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&skipPaging=true'; 
           if(programStage){
               url += '&programStage='+programStage;
           }
@@ -1081,10 +1081,10 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
         getByOrgUnitAndProgram: function(orgUnit, ouMode, program, startDate, endDate){
             var url;
             if(startDate && endDate){
-                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&startDate=' + startDate + '&endDate=' + endDate + '&paging=false';
+                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&startDate=' + startDate + '&endDate=' + endDate + '&skipPaging=true';
             }
             else{
-                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&paging=false';
+                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&skipPaging=true';
             }
             var promise = $http.get( url ).then(function(response){
                 return response.data.events;
