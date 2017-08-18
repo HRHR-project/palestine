@@ -12,6 +12,7 @@ trackerCapture.controller('EventCreationController',
                 DialogService,
                 ModalService,
                 EventCreationService,
+                RegistrationService,
                 eventsByStage,
                 stage,
                 stages,
@@ -24,7 +25,10 @@ trackerCapture.controller('EventCreationController',
                 autoCreate,
                 EventUtils,
                 events,
-                suggestedStage,RegistrationService,EnrollmentService) {
+                suggestedStage,
+                RegistrationService,
+                EnrollmentService,
+                CurrentSelection) {
     $scope.stages = stages;
     $scope.allStages = allStages;
     $scope.events = events;
@@ -244,7 +248,16 @@ trackerCapture.controller('EventCreationController',
         };             
         ModalService.showModal({},modalOptions).then(function(){
             $rootScope.$broadcast('changeOrgUnit', {orgUnit: dummyEvent.orgUnit});
-            $scope.save();
+            
+            $scope.attributesById = CurrentSelection.getAttributesById();
+            $scope.optionSets = CurrentSelection.getOptionSets();
+            $scope.tei = CurrentSelection.get().tei;
+
+            $scope.tei.orgUnit = dummyEvent.orgUnit;
+
+            RegistrationService.registerOrUpdate($scope.tei, $scope.optionSets, $scope.attributesById).then(function (regResponse) {
+                $scope.save();
+            });
         });
     };
     
