@@ -9,7 +9,7 @@
             <form>
                 <div class="form-group" ng-repeat="attribute in findAttributes | filter:{show:true}">
                     <label for="attribute.id">{{attribute.displayName}}</label>
-                    <div ng-if="!attribute.optionSetValue" ng-switch="attribute.valueType">
+                    <div ng-switch="attribute.valueType">
                         <div ng-switch-when="NUMBER">                                           
                                 <input type="number" class="form-control" ng-model="attribute.exactValue"/>                                  
                         </div>

@@ -63,7 +63,7 @@
                     <th class="">                        
                         {{currentStage.excecutionDateLabel}}
                     </th>
-                    <th class="" ng-repeat="prStDe in currentStage.programStageDataElements">
+                    <th class="" ng-repeat="prStDe in currentStage.programStageDataElements | hideSummaryTableColumns">
                         {{prStDe.dataElement.formName ? prStDe.dataElement.formName : prStDe.dataElement.displayName}}
                         <span ng-if="prStDe.compulsory" class="required">*</span>
                         <a href ng-if="prStDe.dataElement.description" Title="{{prStDe.dataElement.description}}" ng-init="showHelpText[prStDe.dataElement.id] = false;" ng-click="showHelpText[prStDe.dataElement.id] = !showHelpText[prStDe.dataElement.id]">
@@ -106,7 +106,7 @@
 
                 </td>
                 <td ng-class="{'current-event-td': currentEvent === eventRow, 'optionset': prStDe.dataElement.optionSetValue, '': !(prStDe.dataElement.optionSetValue)}"
-                    ng-repeat="prStDe in currentStage.programStageDataElements">
+                    ng-repeat="prStDe in currentStage.programStageDataElements | hideSummaryTableColumns">
                     <div ng-if="!isHidden(prStDe.dataElement.id, eventRow)">
                         <div ng-if="tableRowIsEditable(eventRow) && eventRow.validatedEventDate">
                             <div ng-if="prStDe.dataElement.optionSetValue">

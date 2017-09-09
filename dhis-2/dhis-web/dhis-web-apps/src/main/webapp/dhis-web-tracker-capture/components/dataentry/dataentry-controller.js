@@ -3659,5 +3659,21 @@ trackerCapture.controller('DataEntryController',
         for(var key in $scope.eventTableOptions){
             $scope.eventTableOptionsArr[$scope.eventTableOptions[key].sort] = $scope.eventTableOptions[key];
         }
-    }   
+    }
+})
+.filter('hideSummaryTableColumns', function () {
+    //Custom function for hiding table columns in bangladesh:
+    var hiddenSummaryTableColumns = ['aEJoLljIb1y', 'bHVKBPptXae', 'sw0XvIjlcjM', 'S8Yeg0x8Vpy', 'CfIy79NnUSY',
+                'XKV79R3LG5J', 'vjMvkCTew8A'];
+    return function (items) {
+        var filtered = [];
+        for (var i = 0; i < items.length; i++) {
+          var item = items[i];
+          if (!item.dataElement || 
+                  hiddenSummaryTableColumns.indexOf(item.dataElement.id) === -1) {
+            filtered.push(item);
+          }
+        }
+        return filtered;
+    };
 });
