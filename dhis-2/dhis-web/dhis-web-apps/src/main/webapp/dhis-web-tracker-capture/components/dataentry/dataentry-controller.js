@@ -603,7 +603,7 @@ trackerCapture.controller('DataEntryController',
         $scope.optionSets = selections.optionSets;
 
         $scope.stagesById = [];
-        if ($scope.selectedOrgUnit && $scope.selectedProgram && $scope.selectedProgram.id && $scope.selectedEntity && $scope.selectedEnrollment && $scope.selectedEnrollment.enrollment) {
+        if ($scope.selectedOrgUnit && $scope.selectedProgram && $scope.selectedProgram.id && $scope.selectedEntity) {
             ProgramStageFactory.getByProgram($scope.selectedProgram).then(function (stages) {
                 
                 $scope.programStages = stages;
@@ -660,11 +660,11 @@ trackerCapture.controller('DataEntryController',
                 
                 TrackerRulesFactory.getRules($scope.selectedProgram.id).then(function(rules){                    
                     $scope.allProgramRules = rules;
-                    $scope.getEvents();                    
-                    //$scope.getEventPageForEvent($scope.currentEvent);
-                    broadcastDataEntryControllerData();
-                    executeRulesOnInit();
-                    //$rootScope.$broadcast('dataEntryControllerData', {programStages: $scope.programStages, eventsByStage: $scope.eventsByStage, addNewEvent: $scope.addNewEvent });
+                    if($scope.selectedEnrollment) {
+                        $scope.getEvents();  
+                        broadcastDataEntryControllerData();
+                        executeRulesOnInit();
+                    }
                 });           
             });
         }

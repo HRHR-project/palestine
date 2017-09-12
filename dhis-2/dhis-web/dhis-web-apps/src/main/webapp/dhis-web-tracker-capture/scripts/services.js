@@ -23,7 +23,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
     var ButtonIds = { Complete: "Complete", Incomplete: "Incomplete", Validate: "Validate", Delete: "Delete", Skip: "Skip", Unskip: "Unskip", Note: "Note" };
       
     var w = {};
-    w.enrollmentWidget = {title: 'enrollment', view: "components/enrollment/enrollment.html", show: false, expand: true, parent: 'smallerWidget', order: 12, showHideAllowed: true};
+    w.enrollmentWidget = {title: 'enrollment', view: "components/enrollment/enrollment.html", show: true, expand: true, parent: 'smallerWidget', order: 12, showHideAllowed: true};
     //w.indicatorWidget = {title: 'indicators', view: "components/rulebound/rulebound.html", show: true, expand: true, parent: 'smallerWidget', order: 1, showHideAllowed: false};
     w.dataentryWidget = {title: 'dataentry', view: "components/dataentry/dataentry.html", show: true, expand: true, parent: 'biggerWidget', order: 2,showHideAllowed: false};
     w.reportWidget = {title: 'report', view: "components/report/tei-report.html", show: false, expand: true, parent: 'biggerWidget', order: 3, showHideAllowed: true};

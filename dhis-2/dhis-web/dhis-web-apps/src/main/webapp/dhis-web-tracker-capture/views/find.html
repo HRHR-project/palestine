@@ -29,7 +29,8 @@
                     </div>
                     <div ng-if="attribute.optionSetValue">
                         <select ui-select2 ng-model="attribute.value" data-placeholder="{{'please_select'| translate}}" style="width:100%;">
-                            <option ng-repeat="option in optionSets[attribute.optionSet.id].options" value="{{option.name}}">{{option.name | translate}}</option>
+                            <option value="">(No selection)</option>
+                            <option ng-repeat="option in optionSets[attribute.optionSet.id].options" value="{{option.code}}">{{option.name | translate}}</option>
                         </select>
                     </div> 
                 </div>

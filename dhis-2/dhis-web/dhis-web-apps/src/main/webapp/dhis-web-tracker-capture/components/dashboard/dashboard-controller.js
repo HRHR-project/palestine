@@ -6,6 +6,7 @@ trackerCapture.controller('DashboardController',
                 $scope,
                 $location,
                 $modal,
+                $window,
                 $timeout,
                 $filter,
                 $translate,
@@ -184,26 +185,9 @@ trackerCapture.controller('DashboardController',
                             //get enrollments for the selected tei
                             EnrollmentService.getByEntity($scope.selectedTeiId).then(function(response){                    
                                 var enrollments = angular.isObject(response) && response.enrollments ? response.enrollments : [];
-                                var selectedEnrollment = null, backupSelectedEnrollment = null;                            
-                                if(enrollments.length === 1 ){
-                                    selectedEnrollment = enrollments[0];                               
-                                }
-                                else{
-                                    if( $scope.selectedProgramId ){
-                                        angular.forEach(enrollments, function(en){
-                                            if( en.program === $scope.selectedProgramId ){
-                                                if( en.status === 'ACTIVE'){
-                                                    selectedEnrollment = en;
-                                                }
-                                                else{
-                                                    backupSelectedEnrollment = en;
-                                                }
-                                            }
-                                        });
-                                    }                                
-                                }                            
-                                selectedEnrollment = selectedEnrollment ? selectedEnrollment : backupSelectedEnrollment;
-
+                                var selectedEnrollment = null;
+                                var backupSelectedEnrollment = null;
+                                
                                 ProgramFactory.getAll().then(function(programs){
                                     $scope.programs = [];
                                     $scope.programNames = [];  
@@ -218,11 +202,23 @@ trackerCapture.controller('DashboardController',
                                                     $scope.programStageNames[stage.id] = {id: stage.id, displayName: stage.displayName};
                                             });
 
-                                            if($scope.selectedProgramId && program.id === $scope.selectedProgramId || selectedEnrollment && selectedEnrollment.program === program.id){
+                                            if($scope.selectedProgramId && program.id === $scope.selectedProgramId){
                                                 $scope.selectedProgram = program;
+                                                angular.forEach(enrollments, function(en){
+                                                    if( en.program === $scope.selectedProgramId ){
+                                                        if( en.status === 'ACTIVE'){
+                                                            selectedEnrollment = en;
+                                                        }
+                                                        else{
+                                                            backupSelectedEnrollment = en;
+                                                        }
+                                                    }
+                                                });
+                                                selectedEnrollment = selectedEnrollment ? selectedEnrollment : backupSelectedEnrollment;
                                             }
                                         }                                
                                     });
+                                    
 
                                     //filter those enrollments that belong to available programs
                                     var len = enrollments.length;
@@ -338,6 +334,10 @@ trackerCapture.controller('DashboardController',
         getDashboardLayout();
     };
     
+    $scope.applySelectedProgramPostback = function(program){
+        $window.location.href = $window.location.href.replace(/&program=\w+/,"&program=" + program.id);
+    };
+    
     $scope.broadCastSelections = function(tei){
         
         var selections = CurrentSelection.get();
@@ -354,7 +354,7 @@ trackerCapture.controller('DashboardController',
         CurrentSelection.set({tei: $scope.selectedTei, te: $scope.trackedEntity, prs: $scope.programs, pr: $scope.selectedProgram, prNames: $scope.programNames, prStNames: $scope.programStageNames, enrollments: selections.enrollments, selectedEnrollment: selections.selectedEnrollment, optionSets: $scope.optionSets});        
         $timeout(function() { 
             $rootScope.$broadcast('selectedItems', {programExists: $scope.programs.length > 0});            
-        }, 500);
+        }, 500);    
     };     
     
     $scope.activiateTEI = function(){
