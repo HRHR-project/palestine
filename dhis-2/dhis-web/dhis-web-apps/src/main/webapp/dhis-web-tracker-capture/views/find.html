@@ -9,7 +9,7 @@
             <form>
                 <div class="form-group" ng-repeat="attribute in findAttributes | filter:{show:true}">
                     <label for="attribute.id">{{attribute.displayName}}</label>
-                    <div ng-switch="attribute.valueType">
+                    <div ng-if="!attribute.optionSetValue" ng-switch="attribute.valueType">
                         <div ng-switch-when="NUMBER">                                           
                                 <input type="number" class="form-control" ng-model="attribute.exactValue"/>                                  
                         </div>
@@ -27,6 +27,11 @@
                             <input type="text" class="form-control" ng-model="attribute.value" /> 
                         </div>
                     </div>
+                    <div ng-if="attribute.optionSetValue">
+                        <select ui-select2 ng-model="attribute.value" data-placeholder="{{'please_select'| translate}}" style="width:100%;">
+                            <option ng-repeat="option in optionSets[attribute.optionSet.id].options" value="{{option.name}}">{{option.name | translate}}</option>
+                        </select>
+                    </div> 
                 </div>
             </form>           
         </div>
