@@ -2981,6 +2981,22 @@ var d2Services = angular.module('d2Services', ['ngResource'])
         }
     })
 
+    .service('UsersService', function( $http, $translate) {
+        return {
+            getAll: function(event, programStageDataElements){
+                var usernames = [];
+
+                var promise = $http.get("../api/users?paging=false&fields=userCredentials[username]").then(function (response) {
+                    angular.forEach(response.data.users, function (user) {
+                        usernames.push(user.userCredentials.username);
+                    });
+                    return response.data;
+                });
+                return usernames;
+            }
+        };
+    })    
+
     .service('AuditHistoryDataService', function( $http, $translate, DialogService) {
         this.getAuditHistoryData = function(dataId, dataType ) {
             var url="";

@@ -21,6 +21,7 @@ trackerCapture.controller('RegistrationController',
                 TEIGridService,
                 TrackerRulesFactory,
                 TrackerRulesExecutionService,
+                UsersService,
                 ModalService) {
     
     $scope.maxOptionSize = 30;
@@ -31,7 +32,7 @@ trackerCapture.controller('RegistrationController',
     $scope.tei = {};
     $scope.registrationMode = 'REGISTRATION';    
     $scope.hiddenFields = {};
-    
+        
     $scope.helpTexts = {};
     
     $scope.showHelpText = function(attributeId){

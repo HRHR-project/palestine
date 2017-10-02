@@ -172,6 +172,20 @@
                             </a>
                         </span>
                     </span>
+                    <span ng-switch-when="USERNAME">
+                        <d2-users-input d2-model="selectedTei"
+                                        d2-model-id="attribute.id"
+                                        d2-required="attribute.mandatory || attribute.unique"
+                                        d2-disabled="editingDisabled"
+                                        d2-save-methode="teiValueUpdated"
+                                        d2-save-methode-parameter1="selectedTei"
+                                        d2-save-methode-parameter2="attribute.id"
+                                        d2-max-option-size="maxOptionSize"
+                                        d2-attribute-data={{attribute}}
+                                        d2-selected-program-id={{selectedProgram.id}}
+                                        d2-selected-tei-id={{selectedTei.trackedEntityInstance}}>
+                        </d2-users-input>
+                    </span>
                     <span ng-switch-default>
                         <input type="text"
                                name="foo" 

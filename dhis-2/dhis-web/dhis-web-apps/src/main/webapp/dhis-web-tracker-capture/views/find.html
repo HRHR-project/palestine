@@ -22,9 +22,17 @@
                             <select ui-select2 multiple ng-model="attribute.value" data-placeholder="{{'please_select'| translate}}" style="width:100%;">
                                 <option ng-repeat="option in boolOperators" value="{{option}}">{{option| translate}}</option>
                             </select>
-                        </div> 
+                        </div>
+                        <div ng-switch-when="USERNAME">
+                            <d2-users-input-find d2-model="attribute.value"
+                                                 d2-max-option-size="maxOptionSize">
+                            </d2-users-input-find>
+                        </div>
+                        <div ng-switch-when="ORGANISATION_UNIT">
+                            <h1>Hello</h1>
+                        </div>
                         <div ng-switch-default>
-                            <input type="text" class="form-control" ng-model="attribute.value" /> 
+                            <input type="text" class="form-control" ng-model="attribute.value" />
                         </div>
                     </div>
                     <div ng-if="attribute.optionSetValue">
