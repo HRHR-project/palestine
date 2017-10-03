@@ -25,7 +25,8 @@
                         </div>
                         <div ng-switch-when="USERNAME">
                             <d2-users-input-find d2-model="attribute.value"
-                                                 d2-max-option-size="maxOptionSize">
+                                                 d2-max-option-size="maxOptionSize"
+                                                 d2-selected-orgunit-id="selectedSearchingOrgUnit.id">
                             </d2-users-input-find>
                         </div>
                         <!--OrgUnit is automaticly set to root. Should not have any pre-selected OrgUnit. -->
@@ -52,7 +53,6 @@
                                         </div>                      
                                     </accordion-group> 
                                 </accordion>
-                                <h1>{{selectedSearchingOrgUnit}}</h1>
                             </div>
                         </div>
                         <div ng-switch-default>

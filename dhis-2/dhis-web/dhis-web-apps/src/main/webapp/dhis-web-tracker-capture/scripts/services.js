@@ -546,28 +546,26 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
                     }                        
                 });
                 getAllRelated(rootOrgUnit);
-                return rootOrgUnit;
+
+                //Recursive methode for finding all related orgUnits.
+                function getAllRelated(ou) {
+                    angular.forEach(allOrgUnits, function(orgUnit){
+                        if(orgUnit.id === ou.id){
+                            allDownId.push(orgUnit.id);                         
+                            if(!orgUnit.children) {
+                                return;
+                            } else {
+                                angular.forEach(orgUnit.children, function(child){
+                                    getAllRelated(child);                        
+                                });      
+                            }                         
+                        }                        
+                    });
+                }
+                return allDownId;
             });
 
-            //Recursive methode for finding all related orgUnits.
-            function getAllRelated(ou) {
-                angular.forEach(allOrgUnits, function(orgUnit){
-                    if(orgUnit.id === ou.id){
-                        allDownId.push(orgUnit.id);                         
-                        if(!orgUnit.children) {
-                            return;
-                        } else {
-                            angular.forEach(orgUnit.children, function(child){
-                                getAllRelated(child);                        
-                            });      
-                        }                         
-                    }                        
-                });
-            }
-
-            //Should be removed
-            console.log(allDownId);
-            return allDownId;
+            return orgUnitPromise;
         },
         getSearchTreeRoot: function(){
             //var roles = SessionStorageService.get('USER_ROLES');

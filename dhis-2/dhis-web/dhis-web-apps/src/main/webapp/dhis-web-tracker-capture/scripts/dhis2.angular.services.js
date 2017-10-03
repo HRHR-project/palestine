@@ -2983,17 +2983,16 @@ var d2Services = angular.module('d2Services', ['ngResource'])
 
     .service('UsersService', function( $http, $translate) {
         return {
-            getAll: function(event, programStageDataElements){
-                var users = [];
-
+            getAll: function(){
                 var promise = $http.get("../api/users?paging=false&fields=*").then(function (response) {
+                    var users = [];
                     angular.forEach(response.data.users, function (user) {
                         var userObj = {username: user.userCredentials.username, orgUnits: user.organisationUnits};
                         users.push(userObj);
                     });
-                    return response.data;
+                    return users;
                 });
-                return users;
+                return promise;
             }
         };
     })    
