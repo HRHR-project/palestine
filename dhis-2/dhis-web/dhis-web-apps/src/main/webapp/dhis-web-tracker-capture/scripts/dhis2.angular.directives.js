@@ -474,6 +474,7 @@ var d2Directives = angular.module('d2Directives', [])
         },
         controller: function($scope, UsersService) {
             $scope.allUsers = UsersService.getAll();
+            console.log($scope.allUsers);
         }
 
     };

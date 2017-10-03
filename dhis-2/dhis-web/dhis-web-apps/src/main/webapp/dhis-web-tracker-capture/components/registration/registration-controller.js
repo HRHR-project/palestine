@@ -22,6 +22,7 @@ trackerCapture.controller('RegistrationController',
                 TrackerRulesFactory,
                 TrackerRulesExecutionService,
                 UsersService,
+                OrgUnitFactory,
                 ModalService) {
     
     $scope.maxOptionSize = 30;
@@ -32,8 +33,12 @@ trackerCapture.controller('RegistrationController',
     $scope.tei = {};
     $scope.registrationMode = 'REGISTRATION';    
     $scope.hiddenFields = {};
-        
+    
     $scope.helpTexts = {};
+
+    //Should be removed
+    $scope.test = OrgUnitFactory.getIdDown('x9K8eIUf1a4');
+    console.log($scope.test);
     
     $scope.showHelpText = function(attributeId){
         $scope.helpTexts[attributeId] = $scope.helpTexts[attributeId] ? false : true;
