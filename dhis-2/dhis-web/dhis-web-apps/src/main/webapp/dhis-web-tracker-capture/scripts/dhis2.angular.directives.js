@@ -449,7 +449,25 @@ var d2Directives = angular.module('d2Directives', [])
 
         },
         controller: function($scope, UsersService) {
-            $scope.allUsers = UsersService.getAll();
+            $scope.$watch("d2SelectedOrgunitId", function(newValue, oldValue){
+                $scope.allUsers = [];        
+                $scope.temp = UsersService.getAll().then(function(users){
+                    var temp = [];
+                    if($scope.d2SelectedOrgunitId) {
+                        var relatedOrgunits = OrgUnitFactory.getIdDown($scope.d2SelectedOrgunitId).then(function(relatedOrgunits) {
+                            angular.forEach(users, function(user){  
+                                angular.forEach(user.orgUnits, function(orgUnit){  
+                                    if(relatedOrgunits.indexOf(orgUnit.id) > -1 && $scope.allUsers.indexOf(user) === -1) {
+                                        $scope.allUsers.push(user);
+                                    }
+                                });
+                            });
+                        }); 
+                    } else {
+                        $scope.allUsers = users;
+                    }
+                });
+            });
 
             $scope.saveOption = function() {
                 $scope.d2SaveMethode()($scope.d2SaveMethodeParameter1, $scope.d2SaveMethodeParameter2);
@@ -493,10 +511,6 @@ var d2Directives = angular.module('d2Directives', [])
                     }
                 });
             });
-            
-            
-
-            
         }
     };
 })
