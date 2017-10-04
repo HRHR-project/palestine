@@ -533,6 +533,8 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             }
             return orgUnitPromise;
         },
+
+        //Gets all related orgunits, based on the root(uid) orgunit.
         getIdDown: function(uid){    
             var allDownId = [];
             var allOrgUnits = [];

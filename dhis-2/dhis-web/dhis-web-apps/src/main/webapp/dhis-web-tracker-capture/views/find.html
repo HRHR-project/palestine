@@ -30,7 +30,7 @@
                             </d2-users-input-find>
                         </div>
                         <!--OrgUnit is automaticly set to root. Should not have any pre-selected OrgUnit. -->
-                        <div ng-switch-when="ORGANISATION_UNIT" ng-init="attribute.value = selectedSearchingOrgUnit.displayName">
+                        <div ng-switch-when="ORGANISATION_UNIT" ng-init="attribute.value = selectedSearchingOrgUnit.id">
                             <div id="searchOuTree">
                                 <accordion>
                                     <accordion-group is-open="searchOuTree.open">
@@ -42,7 +42,7 @@
                                             <script type="text/ng-template" id="orgUnitTree.html">
                                                 <span class="org-unit-tree-button" ng-click="expandCollapse(orgUnit)" ng-show="orgUnit.show && orgUnit.children.length > 0"><i class="fa fa-minus-square-o"></i></span>
                                                 <span class="org-unit-tree-button" ng-click="expandCollapse(orgUnit)" ng-show="(!orgUnit.show && orgUnit.children.length > 0) || (!orgUnit.show && orgUnit.hasChildren)"><i class="fa fa-plus-square-o"></i></span>
-                                                <span class="org-unit-tree-button" ng-click="setSelectedSearchingOrgUnit(orgUnit); attribute.value = selectedSearchingOrgUnit.displayName" ng-class="{'selected-org-unit' : orgUnit.id === selectedSearchingOrgUnit.id}">{{orgUnit.displayName}}</span>
+                                                <span class="org-unit-tree-button" ng-click="setSelectedSearchingOrgUnit(orgUnit); attribute.value = selectedSearchingOrgUnit.id" ng-class="{'selected-org-unit' : orgUnit.id === selectedSearchingOrgUnit.id}">{{orgUnit.displayName}}</span>
                                                 <ul class="tree" id="tree" ng-show="orgUnit.show">
                                                     <li ng-repeat="orgUnit in orgUnit.children | orderBy:'name'" ng-include="'orgUnitTree.html'"></li>
                                                 </ul>

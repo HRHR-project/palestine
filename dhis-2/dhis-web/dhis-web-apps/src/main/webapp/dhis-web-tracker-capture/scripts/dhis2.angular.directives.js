@@ -436,6 +436,7 @@ var d2Directives = angular.module('d2Directives', [])
             d2ModelId: '=',
             d2Required: '=',
             d2Disabled: '=',
+            d2SelectedOrgunitId: '=',
             d2SaveMethode: '&',
             d2SaveMethodeParameter1: '=',
             d2SaveMethodeParameter2: '=',
@@ -448,16 +449,16 @@ var d2Directives = angular.module('d2Directives', [])
         link: function (scope, element, attrs) {
 
         },
-        controller: function($scope, UsersService) {
+        controller: function($scope, UsersService, OrgUnitFactory) {
             $scope.$watch("d2SelectedOrgunitId", function(newValue, oldValue){
                 $scope.allUsers = [];        
                 $scope.temp = UsersService.getAll().then(function(users){
                     var temp = [];
                     if($scope.d2SelectedOrgunitId) {
-                        var relatedOrgunits = OrgUnitFactory.getIdDown($scope.d2SelectedOrgunitId).then(function(relatedOrgunits) {
+                        var relatedOrgunits = OrgUnitFactory.get($scope.d2SelectedOrgunitId).then(function(selectedOrgUnit) {
                             angular.forEach(users, function(user){  
                                 angular.forEach(user.orgUnits, function(orgUnit){  
-                                    if(relatedOrgunits.indexOf(orgUnit.id) > -1 && $scope.allUsers.indexOf(user) === -1) {
+                                    if(selectedOrgUnit.organisationUnits[0].id === orgUnit.id && $scope.allUsers.indexOf(user) === -1) {
                                         $scope.allUsers.push(user);
                                     }
                                 });
@@ -497,10 +498,10 @@ var d2Directives = angular.module('d2Directives', [])
                 $scope.temp = UsersService.getAll().then(function(users){
                     var temp = [];
                     if($scope.d2SelectedOrgunitId) {
-                        var relatedOrgunits = OrgUnitFactory.getIdDown($scope.d2SelectedOrgunitId).then(function(relatedOrgunits) {
+                        var relatedOrgunits = OrgUnitFactory.get($scope.d2SelectedOrgunitId).then(function(selectedOrgUnit) {
                             angular.forEach(users, function(user){  
                                 angular.forEach(user.orgUnits, function(orgUnit){  
-                                    if(relatedOrgunits.indexOf(orgUnit.id) > -1 && $scope.allUsers.indexOf(user) === -1) {
+                                    if(selectedOrgUnit.organisationUnits[0].id === orgUnit.id && $scope.allUsers.indexOf(user) === -1) {
                                         $scope.allUsers.push(user);
                                     }
                                 });
