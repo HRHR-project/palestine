@@ -1448,7 +1448,9 @@ trackerCapture.controller('DataEntryController',
         //Subsequent calls will be made from the "saveDataValue" function.
         $scope.executeRules();
         if($scope.currentStage.id === 'edqlbukwRfQ'){
-            $scope.setPreviousValuesTable();          
+            $scope.setPreviousValuesTable('WZbXY0S00lP');          
+        } else if($scope.currentStage.id === 'dqF3sxJKBls') {
+            $scope.setPreviousValuesTable('w0pwmNYugKX');
         }
 
     };
@@ -3431,12 +3433,12 @@ trackerCapture.controller('DataEntryController',
     };
     
     //hardcoded palestine
-    $scope.setPreviousValuesTable = function(){
+    $scope.setPreviousValuesTable = function(id){
         $scope.previousEvents = {
             first: {},
             other: []
         };
-        var firstStageEvents = $scope.eventsByStage['WZbXY0S00lP'];
+        var firstStageEvents = $scope.eventsByStage[id];
         if(firstStageEvents && firstStageEvents.length >0){
             $scope.previousEvents.first = firstStageEvents[0];
         }
