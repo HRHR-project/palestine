@@ -371,7 +371,7 @@ trackerCapture.controller('DataEntryController',
         WPgz41MctSW:true, HaOwL7bIdrs: true, MO39jKgz2VA: true, E8Jetf3Q90U: true};
     $scope.topLineStageFilter = {};
     $scope.headerStages = [];
-    $scope.headerCombineStages = {WZbXY0S00lP: "edqlbukwRfQ"};
+    $scope.headerCombineStages = {WZbXY0S00lP: "edqlbukwRfQ", w0pwmNYugKX: "dqF3sxJKBls"};
     
     $scope.getHeaderStages = function(){
         angular.forEach($scope.programStages, function(stage){
@@ -1000,13 +1000,18 @@ trackerCapture.controller('DataEntryController',
     
     $scope.stageErrorInEventLayout = [];
     $scope.showCreateEventIfStageNeedsEvent = function(stage, eventCreationAction, requireStageEventsToBeCompleted, showModalOnNoEventsNeeded){
-
+        console.log(stage);
         //custom code for folkehelsa
         if(stage.id === 'edqlbukwRfQ'){
             if(angular.isUndefined($scope.eventsByStage['WZbXY0S00lP']) || $scope.eventsByStage['WZbXY0S00lP'].length === 0){
                 stage = $scope.stagesById['WZbXY0S00lP'];
             } 
+        } else if(stage.id === 'dqF3sxJKBls') {
+            if(angular.isUndefined($scope.eventsByStage['w0pwmNYugKX']) || $scope.eventsByStage['w0pwmNYugKX'].length === 0){
+                stage = $scope.stagesById['w0pwmNYugKX'];
+            }
         }
+        console.log(stage);
         //-------------------------                
         
         showModalOnNoEventsNeeded = angular.isDefined(showModalOnNoEventsNeeded) && showModalOnNoEventsNeeded === true ? true : false;
