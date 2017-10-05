@@ -123,7 +123,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
 .service('SystemSettingsService', function($http) {
     return {
         getCountry: function(){
-            var promise = $http.get('../api/systemSettings/keyCountr').then(function(response){
+            var promise = $http.get('../api/systemSettings/keyCountry').then(function(response){
                 return response.data;
             }, function(){
                 return null;
