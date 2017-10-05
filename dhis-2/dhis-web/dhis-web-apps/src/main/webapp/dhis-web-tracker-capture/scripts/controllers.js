@@ -606,9 +606,8 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
         }
         TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){            
             if( data && data.metaData){
-                //Determins how many results to display. Should be === 1 for Palestine and <= 5 for Bangladesh.
                 SystemSettingsService.getCountry().then(function(response){
-                    console.log(response);
+                    //Determins how many results to display. Should be === 1 for Palestine and <= 5 for Bangladesh.
                     var numToDisplay = response === 'bangladesh' ? 5 : 1;
                     
                     if(data.rows.length <= numToDisplay){

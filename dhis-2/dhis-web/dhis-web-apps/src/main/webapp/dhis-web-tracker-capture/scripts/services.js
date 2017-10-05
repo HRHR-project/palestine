@@ -123,8 +123,10 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
 .service('SystemSettingsService', function($http) {
     return {
         getCountry: function(){
-            var promise = $http.get('../api/systemSettings/keyCountry').then(function(response){
+            var promise = $http.get('../api/systemSettings/keyCountr').then(function(response){
                 return response.data;
+            }, function(){
+                return null;
             });
             return promise;            
         }
@@ -136,6 +138,8 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
         getCountry: function(){
             var promise = $http.get('../api/dataStore/mch-tracker/country').then(function(response){
                 return response.data.country;
+            }, function(){
+                return null;
             });
             return promise;            
         }
