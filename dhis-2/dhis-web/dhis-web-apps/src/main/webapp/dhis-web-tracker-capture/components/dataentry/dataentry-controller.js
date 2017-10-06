@@ -27,6 +27,7 @@ trackerCapture.controller('DataEntryController',
                 PeriodService,
                 TrackerRulesFactory,
                 EventCreationService,
+                SystemSettingsService,
                 $q,$location) {
     $scope.printForm = false;
     $scope.printEmptyForm = false;
@@ -110,6 +111,18 @@ trackerCapture.controller('DataEntryController',
         {color: '', description: 'empty', showInStageLegend: true, showInEventLegend: false}
     ];
     $scope.showLegend = false;
+
+    //Code for Bangladesh, is used in default-form.html to set the col size of data elements to 7.
+    $scope.isBangladesh = false;
+    $scope.setColSize = function() {
+        SystemSettingsService.getCountry().then(function(response){
+            if(response === 'bangladesh') {
+                $scope.isBangladesh = true;
+            } else {
+                $scope.isBangladesh = false;
+            }
+        });
+    };
     
     $scope.filterLegend = function(){
         if($scope.mainMenuStageSelected()){
