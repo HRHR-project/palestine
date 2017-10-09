@@ -98,6 +98,7 @@
                                 <td>
                                     {{currentEvent.excecutionDateLabel}}
                                 </td>
+                                <!--This is where the labels for the previous values are displayed.-->
                                 <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
                                     <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>    
                                 </td>
@@ -106,6 +107,7 @@
                         <tbody>
                             <tr>
                                 <td>{{previousEvents.first.eventDate}}</td>
+                                <!--This is where the first event previous values are displayed.-->
                                 <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
                                     <span ng-if="previousEvents.first[de.dataElement.id] === 'true'">{{'yes' | translate}}</span>
                                     <span ng-if="previousEvents.first[de.dataElement.id] === 'false'">{{'no' | translate}}</span>
@@ -114,6 +116,7 @@
                             </tr>
                             <tr ng-repeat="prevEvent in previousEvents.other">
                                 <td>{{prevEvent.eventDate}}</td>
+                                <!--This is where the rest of the event previous values are displayed.-->
                                 <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
                                     <span ng-if="prevEvent[de.dataElement.id] === 'true'">{{'yes' | translate}}</span>
                                     <span ng-if="prevEvent[de.dataElement.id] === 'false'">{{'no' | translate}}</span>
