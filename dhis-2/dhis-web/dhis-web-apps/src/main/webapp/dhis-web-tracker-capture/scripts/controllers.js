@@ -27,6 +27,7 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
                 TEIGridService,
                 TEIService,
                 EventReportService,
+                SystemSettingsService,
                 ModalService,$q) {
     $scope.maxOptionSize = 30;
     
@@ -592,6 +593,8 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
         }
     };
     
+    $scope.isBangladesh = true;
+
     $scope.findTei = function(){
         if($scope.selectedProgram){
             $scope.programUrl = 'program=' + $scope.selectedProgram.id;
@@ -603,48 +606,53 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
         }
         TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){            
             if( data && data.metaData){
-                if(data.rows.length===1){
-                    var newProgramUrl = $scope.programUrl +'&followUp=true';
-                    TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,newProgramUrl,$scope.findAttributeUrl.url,null,false).then(function(followUpData){
-                        var followUp = false;
-                        if(followUpData && followUpData.metaData && followUpData.rows.length ===1){
-                            followUp = true;
-                        }
-                        var formattedData = TEIGridService.format(data,false, $scope.optionSets, null,followUp);
-                        $scope.teiFetched = $scope.teiFound = true;
-                        $scope.trackedEntityList = formattedData;
-                        $scope.findWarning = false;
-                    });
-
-                }else if(data.rows.length===0){
-                    TEIService.search($scope.selectedOrgUnit.id,'ALL',null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){
-                        if(data && data.metaData){
-                            if(data.rows.length===1){
-                                var newProgramUrl = $scope.programUrl +'&followUp=true';
-                                TEIService.search($scope.selectedOrgUnit.id,'ALL',null,newProgramUrl,$scope.findAttributeUrl.url,null,false).then(function(followUpData){                                            
-                                    var followUp = false;
-                                    if(followUpData && followUpData.metaData && followUpData.rows.length ===1){
-                                        followUp = true;
-                                    }
-                                    $scope.showFoundInOtherOrgUnitModal(data,followUp);
-                                    $scope.findWarning = false;
-
-                                });
-
-
-                            }else if(data.rows.length===0){
-                                $scope.showNotFoundModal(data);   
-                                $scope.findWarning = false;
-                            }else{
-                                $scope.findWarning = true;
+                SystemSettingsService.getCountry().then(function(response){
+                    //Determins how many results to display. Should be === 1 for Palestine and <= 5 for Bangladesh.
+                    var numToDisplay = response === 'bangladesh' ? 5 : 1;
+                    
+                    if(data.rows.length <= numToDisplay){
+                        var newProgramUrl = $scope.programUrl +'&followUp=true';
+                        TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,newProgramUrl,$scope.findAttributeUrl.url,null,false).then(function(followUpData){
+                            var followUp = false;
+                            if(followUpData && followUpData.metaData && followUpData.rows.length ===1){
+                                followUp = true;
                             }
-                        }
+                            var formattedData = TEIGridService.format(data,false, $scope.optionSets, null,followUp);
+                            $scope.teiFetched = $scope.teiFound = true;
+                            $scope.trackedEntityList = formattedData;
+                            $scope.findWarning = false;
+                        });
 
-                    });
-                }else{
-                    $scope.findWarning = true;
-                }
-            }
+                    }else if(data.rows.length===0){
+                        TEIService.search($scope.selectedOrgUnit.id,'ALL',null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){
+                            if(data && data.metaData){
+                                if(data.rows.length===1){
+                                    var newProgramUrl = $scope.programUrl +'&followUp=true';
+                                    TEIService.search($scope.selectedOrgUnit.id,'ALL',null,newProgramUrl,$scope.findAttributeUrl.url,null,false).then(function(followUpData){                                            
+                                        var followUp = false;
+                                        if(followUpData && followUpData.metaData && followUpData.rows.length ===1){
+                                            followUp = true;
+                                        }
+                                        $scope.showFoundInOtherOrgUnitModal(data,followUp);
+                                        $scope.findWarning = false;
+
+                                    });
+
+
+                                }else if(data.rows.length===0){
+                                    $scope.showNotFoundModal(data);   
+                                    $scope.findWarning = false;
+                                }else{
+                                    $scope.findWarning = true;
+                                }
+                            }
+
+                        });
+                    }else{
+                        $scope.findWarning = true;
+                    }
+                });
+            }   
         });
     };
     
