@@ -560,6 +560,12 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             }
             return orgUnitPromise;
         },
+        getAll: function(){            
+            orgUnitPromise = $http.get( '../api/organisationUnits.json?' + '&fields=id,name,displayName,&paging=false' ).then(function(response){
+                return response.data;
+            });
+            return orgUnitPromise;
+        },
 
         //Gets all related orgunits, based on the root(uid) orgunit.
         getIdDown: function(uid){    
