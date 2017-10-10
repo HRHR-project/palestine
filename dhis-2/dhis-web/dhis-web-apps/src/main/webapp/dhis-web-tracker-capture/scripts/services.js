@@ -533,10 +533,46 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             }
             return orgUnitPromise;
         },
+
+        //Gets all related orgunits, based on the root(uid) orgunit.
+        getIdDown: function(uid){    
+            var allDownId = [];
+            var allOrgUnits = [];
+            var rootOrgUnit = null;
+
+            orgUnitPromise = $http.get( '../api/organisationUnits.json?fields=id,level,children[id,level]&paging=false' ).then(function(response){
+                allOrgUnits = response.data.organisationUnits;
+                angular.forEach(response.data.organisationUnits, function(orgUnit){
+                    if(orgUnit.id === uid){
+                        rootOrgUnit = orgUnit;                               
+                    }                        
+                });
+                getAllRelated(rootOrgUnit);
+
+                //Recursive methode for finding all related orgUnits.
+                function getAllRelated(ou) {
+                    angular.forEach(allOrgUnits, function(orgUnit){
+                        if(orgUnit.id === ou.id){
+                            allDownId.push(orgUnit.id);                         
+                            if(!orgUnit.children) {
+                                return;
+                            } else {
+                                angular.forEach(orgUnit.children, function(child){
+                                    getAllRelated(child);                        
+                                });      
+                            }                         
+                        }                        
+                    });
+                }
+                return allDownId;
+            });
+
+            return orgUnitPromise;
+        },
         getSearchTreeRoot: function(){
             //var roles = SessionStorageService.get('USER_ROLES');
             if(!rootOrgUnitPromise){
-                var url = '../api/me.json?fields=organisationUnits[id,name,displayName,level,children[id,name,displayName,level,children[id,name,displayName,level]]]&paging=false';
+                var url = '../api/organisationUnits.json?filter=level:eq:1&fields=id,name, displayName,children[id,name, displayName, children[id,name, displayName]]&paging=false';
                 /*if( roles && roles.userCredentials && roles.userCredentials.userRoles){
                     var userRoles = roles.userCredentials.userRoles;
                     for(var i=0; i<userRoles.length; i++){

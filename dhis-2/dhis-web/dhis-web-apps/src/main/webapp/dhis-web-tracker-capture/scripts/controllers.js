@@ -716,7 +716,11 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
     
     //load programs for the selected orgunit (from tree)
     $scope.setSelectedSearchingOrgUnit = function(orgUnit){    
-        $scope.selectedSearchingOrgUnit = orgUnit;
+        if(orgUnit === $scope.selectedSearchingOrgUnit) {
+            $scope.selectedSearchingOrgUnit = null;
+        } else {
+            $scope.selectedSearchingOrgUnit = orgUnit;            
+        }
     };
     
     function setFindAttributes(){

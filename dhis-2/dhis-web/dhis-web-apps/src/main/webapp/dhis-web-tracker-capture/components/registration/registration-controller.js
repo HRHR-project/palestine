@@ -21,6 +21,8 @@ trackerCapture.controller('RegistrationController',
                 TEIGridService,
                 TrackerRulesFactory,
                 TrackerRulesExecutionService,
+                UsersService,
+                OrgUnitFactory,
                 ModalService) {
     
     $scope.maxOptionSize = 30;
