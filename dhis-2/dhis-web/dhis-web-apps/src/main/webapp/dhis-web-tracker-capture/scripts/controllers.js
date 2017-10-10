@@ -610,7 +610,7 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
                     //Determins how many results to display. Should be === 1 for Palestine and <= 5 for Bangladesh.
                     var numToDisplay = response === 'bangladesh' ? 5 : 1;
                     
-                    if(data.rows.length <= numToDisplay){
+                    if(data.rows.length <= numToDisplay && data.rows.length !== 0){
                         var newProgramUrl = $scope.programUrl +'&followUp=true';
                         TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,newProgramUrl,$scope.findAttributeUrl.url,null,false).then(function(followUpData){
                             var followUp = false;
@@ -622,8 +622,7 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
                             $scope.trackedEntityList = formattedData;
                             $scope.findWarning = false;
                         });
-
-                    }else if(data.rows.length===0){
+                    } else if(data.rows.length === 0) {
                         TEIService.search($scope.selectedOrgUnit.id,'ALL',null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){
                             if(data && data.metaData){
                                 if(data.rows.length===1){
