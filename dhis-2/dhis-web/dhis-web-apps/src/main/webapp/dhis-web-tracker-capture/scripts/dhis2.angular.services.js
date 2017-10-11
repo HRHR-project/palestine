@@ -2987,7 +2987,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                 var promise = $http.get("../api/users?paging=false&fields=*").then(function (response) {
                     var users = [];
                     angular.forEach(response.data.users, function (user) {
-                        var userObj = {username: user.userCredentials.username, orgUnits: user.organisationUnits};
+                        var userObj = {username: user.userCredentials.username, orgUnits: user.organisationUnits, name: user.userCredentials.displayName};
                         users.push(userObj);
                     });
                     return users;
