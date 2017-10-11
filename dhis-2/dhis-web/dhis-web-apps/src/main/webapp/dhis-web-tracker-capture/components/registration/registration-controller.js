@@ -316,9 +316,13 @@ trackerCapture.controller('RegistrationController',
     };
 
     $scope.setSelectedSearchingOrgUnitFromId = function(id){    
-        OrgUnitFactory.get(id).then(function(response) {  
-            $scope.setSelectedSearchingOrgUnit(response.organisationUnits[0]);
-        });
+        if(id) {
+            OrgUnitFactory.get(id).then(function(response) {  
+                $scope.setSelectedSearchingOrgUnit(response.organisationUnits[0]);
+            });
+        } else {
+            $scope.setSelectedSearchingOrgUnit(null);
+        }
     };
     
     //load programs for the selected orgunit (from tree)
