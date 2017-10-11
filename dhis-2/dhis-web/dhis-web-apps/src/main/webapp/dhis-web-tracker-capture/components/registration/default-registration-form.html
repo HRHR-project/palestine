@@ -187,15 +187,13 @@
                                         d2-selected-tei-id={{selectedTei.trackedEntityInstance}}>
                         </d2-users-input>
                     </span>
-                     <!--ng-init="attribute.value = selectedSearchingOrgUnit.id"-->
+                     <!--Required needs to be implemented-->
                     <div ng-switch-when="ORGANISATION_UNIT" ng-init="setSelectedSearchingOrgUnitFromId(selectedTei[attribute.id])">
                         <div id="searchOuTree"
-                             name="foo"
                              ng-model="selectedTei[attribute.id]"
                              attribute-data={{attribute}}
                              selected-program-id={{selectedProgram.id}}  
                              selected-tei-id={{selectedTei.trackedEntityInstance}}  
-                             ng-disabled="editingDisabled" 
                              ng-required="attribute.mandatory || attribute.unique">
                             <accordion ng-if="!editingDisabled">
                                 <accordion-group is-open="searchOuTree.open" is-disabled="editingDisabled">
@@ -222,7 +220,7 @@
                                     </div>                      
                                 </accordion-group> 
                             </accordion>
-                            <input type="text" ng-disabled="true" class="form-control" value="{{selectedSearchingOrgUnit.displayName}}" ng-if="editingDisabled">
+                            <input type="text" ng-disabled="true" class="form-control" value="{{selectedSearchingOrgUnit.displayName}}" ng-if="editingDisabled" name="foo">
                         </div>
                     </div>
                     <span ng-switch-default>
