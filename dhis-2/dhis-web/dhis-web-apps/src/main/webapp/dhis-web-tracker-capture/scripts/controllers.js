@@ -55,6 +55,7 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
     $scope.model = {};
 
     //Selection
+    $scope.pageReady = false;
     $scope.ouModes = [{displayName: 'SELECTED'}, {displayName: 'CHILDREN'}, {displayName: 'DESCENDANTS'}, {displayName: 'ACCESSIBLE'}];         
     $scope.selectedOuMode = $scope.ouModes[2];    
     $scope.dashboardProgramId = ($location.search()).program;
@@ -62,6 +63,24 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
     $scope.treeLoaded = false;
     $scope.searchOuTree = {open: true};
     $scope.teiListMode = {onlyActive: false};
+
+    SystemSettingsService.getCountry().then(function(response){
+        if(response === 'bangladesh') {
+            $scope.isBangladesh = true;
+            OrgUnitFactory.getAll().then(function(allOrgUnits) {
+                var temp = {};
+                angular.forEach(allOrgUnits.organisationUnits, function(orgUnit){
+                    temp[orgUnit.id] = orgUnit;
+                });
+    
+                $scope.pageReady = true;
+                $scope.allOrgUnits = temp;
+            });
+        } else {
+            $scope.isBangladesh = false;
+            $scope.pageReady = true;
+        }
+    });
     
     //Paging
     $scope.pager = {pageSize: 50, page: 1, toolBarDisplay: 5};   
@@ -592,8 +611,6 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
             $scope.fetchTeis();
         }
     };
-    
-    $scope.isBangladesh = true;
 
     $scope.findTei = function(){
         if($scope.selectedProgram){
@@ -606,10 +623,21 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
         }
         TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){            
             if( data && data.metaData){
-                SystemSettingsService.getCountry().then(function(response){
+                 SystemSettingsService.getCountry().then(function(response){
                     //Determins how many results to display. Should be === 1 for Palestine and <= 5 for Bangladesh.
                     var numToDisplay = response === 'bangladesh' ? 5 : 1;
-                    
+                    if (!$scope.allOrgUnits && response === 'bangladesh') {
+                        return OrgUnitFactory.getAll().then(function(allOrgUnits) {
+                            var temp = {};
+                            angular.forEach(allOrgUnits.organisationUnits, function(orgUnit){
+                                temp[orgUnit.id] = orgUnit;
+                            });
+                            $scope.allOrgUnits = temp;
+                            return numToDisplay;
+                        });
+                    }
+                    return numToDisplay;
+                }).then(function(numToDisplay) {
                     if(data.rows.length <= numToDisplay && data.rows.length !== 0){
                         var newProgramUrl = $scope.programUrl +'&followUp=true';
                         TEIService.search($scope.selectedOrgUnit.id,$scope.selectedOuMode.displayName,null,newProgramUrl,$scope.findAttributeUrl.url,null,false).then(function(followUpData){
@@ -621,6 +649,7 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
                             $scope.teiFetched = $scope.teiFound = true;
                             $scope.trackedEntityList = formattedData;
                             $scope.findWarning = false;
+
                         });
                     } else if(data.rows.length === 0) {
                         TEIService.search($scope.selectedOrgUnit.id,'ALL',null,$scope.programUrl,$scope.findAttributeUrl.url,null,false).then(function(data){

@@ -37,8 +37,9 @@
     
 </div>
 
-<div class="page" id="mainPage">
 
+
+<div class="page" id="mainPage" ng-show="pageReady">
     <div ng-if="treeLoaded && !selectedOrgUnit">
         <img src="../images/ajax-loader-bar.gif" alt="{{'in_progress'| translate}}"/><br>
         {{'loading_metadata'| translate}}
