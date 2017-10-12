@@ -187,10 +187,16 @@
                                         d2-selected-tei-id={{selectedTei.trackedEntityInstance}}>
                         </d2-users-input>
                     </span>
-                    <div ng-switch-when="ORGANISATION_UNIT" ng-init="attribute.value = selectedSearchingOrgUnit.id">
-                        <div id="searchOuTree">
-                            <accordion>
-                                <accordion-group is-open="searchOuTree.open">
+                     <!--Required needs to be implemented-->
+                    <div ng-switch-when="ORGANISATION_UNIT" ng-init="setSelectedSearchingOrgUnitFromId(selectedTei[attribute.id])">
+                        <div id="searchOuTree"
+                             ng-model="selectedTei[attribute.id]"
+                             attribute-data={{attribute}}
+                             selected-program-id={{selectedProgram.id}}  
+                             selected-tei-id={{selectedTei.trackedEntityInstance}}  
+                             ng-required="attribute.mandatory || attribute.unique">
+                            <accordion ng-if="!editingDisabled">
+                                <accordion-group is-open="searchOuTree.open" is-disabled="editingDisabled">
                                     <accordion-heading>
                                         <span ng-if="!selectedSearchingOrgUnit.displayName"> {{'please_select'| translate}} <i class="pull-right" ng-class="{'fa fa-chevron-up vertical-center': searchOuTree.open, 'fa fa-chevron-down vertical-center': !searchOuTree.open}"></i></span>
                                         <span ng-if="selectedSearchingOrgUnit.displayName">{{selectedSearchingOrgUnit.displayName}} <i class="pull-right" ng-class="{'fa fa-chevron-up vertical-center': searchOuTree.open, 'fa fa-chevron-down vertical-center': !searchOuTree.open}"></i></span>
@@ -199,7 +205,11 @@
                                         <script type="text/ng-template" id="orgUnitTree.html">
                                             <span class="org-unit-tree-button" ng-click="expandCollapse(orgUnit)" ng-show="orgUnit.show && orgUnit.children.length > 0"><i class="fa fa-minus-square-o"></i></span>
                                             <span class="org-unit-tree-button" ng-click="expandCollapse(orgUnit)" ng-show="(!orgUnit.show && orgUnit.children.length > 0) || (!orgUnit.show && orgUnit.hasChildren)"><i class="fa fa-plus-square-o"></i></span>
-                                            <span class="org-unit-tree-button" ng-click="setSelectedSearchingOrgUnit(orgUnit); attribute.value = selectedSearchingOrgUnit.id" ng-class="{'selected-org-unit' : orgUnit.id === selectedSearchingOrgUnit.id}">{{orgUnit.displayName}}</span>
+                                            <span class="org-unit-tree-button"
+                                                  ng-click="setSelectedSearchingOrgUnit(orgUnit); selectedTei[attribute.id] = selectedSearchingOrgUnit.id; teiValueUpdated(selectedTei, attribute.id)"
+                                                  ng-class="{'selected-org-unit' : orgUnit.id === selectedSearchingOrgUnit.id}">
+                                                {{orgUnit.displayName}}
+                                            </span>
                                             <ul class="tree" id="tree" ng-show="orgUnit.show">
                                                 <li ng-repeat="orgUnit in orgUnit.children | orderBy:'name'" ng-include="'orgUnitTree.html'"></li>
                                             </ul>
@@ -210,6 +220,7 @@
                                     </div>                      
                                 </accordion-group> 
                             </accordion>
+                            <input type="text" ng-disabled="true" class="form-control" value="{{selectedSearchingOrgUnit.displayName}}" ng-if="editingDisabled" name="foo">
                         </div>
                     </div>
                     <span ng-switch-default>

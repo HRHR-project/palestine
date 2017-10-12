@@ -50,7 +50,7 @@ trackerCapture.controller('RegistrationController',
             
             CurrentSelection.setAttributesById($scope.attributesById);
         });
-    }    
+    }
     
     $scope.optionSets = CurrentSelection.getOptionSets();        
     if(!$scope.optionSets){
@@ -286,7 +286,53 @@ trackerCapture.controller('RegistrationController',
             return false;
         }        
         performRegistration(destination);
-    }; 
+    };
+
+    OrgUnitFactory.getSearchTreeRoot().then(function(response) {  
+        $scope.orgUnits = response.organisationUnits;
+        angular.forEach($scope.orgUnits, function(ou){
+            ou.show = true;
+            angular.forEach(ou.children, function(o){                    
+                o.hasChildren = o.children && o.children.length > 0 ? true : false;
+            });            
+        });
+    });
+
+    $scope.expandCollapse = function(orgUnit) {
+        if( orgUnit.hasChildren ){            
+            //Get children for the selected orgUnit
+            OrgUnitFactory.get(orgUnit.id).then(function(ou) {                
+                orgUnit.show = !orgUnit.show;
+                orgUnit.hasChildren = false;
+                orgUnit.children = ou.organisationUnits[0].children;                
+                angular.forEach(orgUnit.children, function(ou){                    
+                    ou.hasChildren = ou.children && ou.children.length > 0 ? true : false;
+                });                
+            });           
+        }
+        else{
+            orgUnit.show = !orgUnit.show;   
+        }        
+    };
+
+    $scope.setSelectedSearchingOrgUnitFromId = function(id){    
+        if(id) {
+            OrgUnitFactory.get(id).then(function(response) {  
+                $scope.setSelectedSearchingOrgUnit(response.organisationUnits[0]);
+            });
+        } else {
+            $scope.setSelectedSearchingOrgUnit(null);
+        }
+    };
+    
+    //load programs for the selected orgunit (from tree)
+    $scope.setSelectedSearchingOrgUnit = function(orgUnit){    
+        if(orgUnit === $scope.selectedSearchingOrgUnit) {
+            $scope.selectedSearchingOrgUnit = null;
+        } else {
+            $scope.selectedSearchingOrgUnit = orgUnit;            
+        }
+    };
     
     var processRuleEffect = function(){        
         $scope.warningMessages = [];        
