@@ -52,6 +52,7 @@
                     </a>
                 </accordion-heading>
                 
+                <!-- Previous values for ANC -->
                 <div ng-if="currentStage.id ==='edqlbukwRfQ' && section.id!=='rBOWhA2FB9r'">
                     <strong>Previous values</strong>
                     <table class="dhis2-table-striped-border">
@@ -61,7 +62,7 @@
                                     {{currentEvent.excecutionDateLabel}}
                                 </td>
                                 <td>Gest.Age at visit</td>
-                                <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
+                                <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
                                     <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>                                
                                 </td>
                             </tr>
@@ -70,7 +71,7 @@
                             <tr>
                                 <td>{{previousEvents.first.eventDate}}</td>
                                 <td>{{previousEvents.first['Kb2LvjqXHfi']}}</td>
-                                <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
+                                <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
                                     <span ng-if="previousEvents.first[de.dataElement.id] === 'true'">{{'yes' | translate}}</span>
                                     <span ng-if="previousEvents.first[de.dataElement.id] === 'false'">{{'no' | translate}}</span>
                                     <span ng-if="previousEvents.first[de.dataElement.id]!== 'true' && previousEvents.first[de.dataElement.id]!== 'false'">{{previousEvents.first[de.dataElement.id]}}</span>
@@ -79,7 +80,7 @@
                             <tr ng-repeat="prevEvent in previousEvents.other">
                                 <td>{{prevEvent.eventDate}}</td>
                                 <td>{{prevEvent['Kb2LvjqXHfi']}}</td>
-                                <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
+                                <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
                                     <span ng-if="prevEvent[de.dataElement.id] === 'true'">{{'yes' | translate}}</span>
                                     <span ng-if="prevEvent[de.dataElement.id] === 'false'">{{'no' | translate}}</span>
                                     <span ng-if="prevEvent[de.dataElement.id]!== 'true' && prevEvent[de.dataElement.id]!== 'false'">{{prevEvent[de.dataElement.id]}}</span>
@@ -90,6 +91,7 @@
                     <br/>
                 </div>
 
+                <!-- Previous values for PNC -->
                 <div ng-if="currentStage.id ==='dqF3sxJKBls' && section.id!=='oVhtrAy6kqv'">
                     <strong>Previous values</strong>
                     <table class="dhis2-table-striped-border">
@@ -99,7 +101,7 @@
                                     {{currentEvent.excecutionDateLabel}}
                                 </td>
                                 <!--This is where the labels for the previous values are displayed.-->
-                                <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
+                                <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
                                     <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>    
                                 </td>
                             </tr>
@@ -108,7 +110,7 @@
                             <tr>
                                 <td>{{previousEvents.first.eventDate}}</td>
                                 <!--This is where the first event previous values are displayed.-->
-                                <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
+                                <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
                                     <span ng-if="previousEvents.first[de.dataElement.id] === 'true'">{{'yes' | translate}}</span>
                                     <span ng-if="previousEvents.first[de.dataElement.id] === 'false'">{{'no' | translate}}</span>
                                     <span ng-if="previousEvents.first[de.dataElement.id]!== 'true' && previousEvents.first[de.dataElement.id]!== 'false'">{{previousEvents.first[de.dataElement.id]}}</span>
@@ -117,7 +119,7 @@
                             <tr ng-repeat="prevEvent in previousEvents.other">
                                 <td>{{prevEvent.eventDate}}</td>
                                 <!--This is where the rest of the event previous values are displayed.-->
-                                <td ng-repeat="de in section.programStageDataElements" ng-if="de.dataElement.id !== 'OsaG5OsIJw9' && de.dataElement.id !== 'Kb2LvjqXHfi'">
+                                <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
                                     <span ng-if="prevEvent[de.dataElement.id] === 'true'">{{'yes' | translate}}</span>
                                     <span ng-if="prevEvent[de.dataElement.id] === 'false'">{{'no' | translate}}</span>
                                     <span ng-if="prevEvent[de.dataElement.id]!== 'true' && prevEvent[de.dataElement.id]!== 'false'">{{prevEvent[de.dataElement.id]}}</span>

@@ -537,6 +537,19 @@ trackerCapture.controller('DataEntryController',
             }            
         }
     };
+    
+    //Contains an array of dataelements that should not be displayed in "Previous values".
+    $scope.showPreviousValue = function (id) {
+        //Hidden values for Bangladesh.
+        var hiddenValues = ['OsaG5OsIJw9', 'Kb2LvjqXHfi', 'M4HEOoEFTAT', 'dyYdfamSY2Z', 'A4i1iD8Askw', 'ql1h1eXRbJ2', 'V454TVtRUVM', 'pHNanCbrioZ',
+                            'achoX4owMl2'];
+
+        if(hiddenValues.indexOf(id) >= 0) {
+            return false;
+        }
+
+        return true;
+    };
 
     $scope.executeRules = function () {        
         //$scope.allEventsSorted cannot be used, as it is not reflecting updates that happened within the current session
