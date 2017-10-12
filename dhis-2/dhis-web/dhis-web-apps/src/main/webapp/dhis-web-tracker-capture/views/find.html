@@ -72,8 +72,11 @@
                 <div class="col-md-12 vertical-spacing">
                      <button type="button" class="btn btn-primary" ng-click="findTei()">{{'search_register' | translate }}</button>
                 </div>
-                <div class="col-md-12 vertical-spacing" ng-if="findWarning">
+                <div class="col-md-12 vertical-spacing" ng-if="findWarning && !isBangladesh">
                     <div class="alert alert-warning"><span>{{'multiple_records_warning'| translate}}</span></div>
+                </div>
+                <div class="col-md-12 vertical-spacing" ng-if="findWarning && isBangladesh">
+                    <div class="alert alert-warning"><span>{{'more_than_5_records_warning'| translate}}</span></div>
                 </div>
             </div>
 
