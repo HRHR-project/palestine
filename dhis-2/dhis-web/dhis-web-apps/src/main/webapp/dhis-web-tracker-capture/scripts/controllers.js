@@ -348,6 +348,8 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
         $scope.teiFetched = false;
         $scope.trackedEntityList = null;
         var today = DateUtils.getToday();
+        //Covert to API format, otherwise in some cases (when user format is dd-mm-yyyy) the API request fails.
+        today = DateUtils.formatFromUserToApi(today);
         var promises = [];
         
         if(!statuses){
