@@ -288,6 +288,11 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
         }
         return tei[$scope.sortColumn.id];
     };
+
+    $scope.convertDate = function(date){
+        var temp = DateUtils.formatFromApiToUser(date);
+        return temp;
+    };
    
     //$scope.searchParam = {bools: []};
     $scope.search = function(mode,goToPage){
