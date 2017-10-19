@@ -251,9 +251,9 @@
                             on-remove="saveMultiSelectState($item,currentEvent,prStDe,false)"
                             on-select="saveMultiSelectState($item,currentEvent,prStDe,true)"
                             ng-style="{'width': '100%'}">
-                    <ui-select-match allow-clear="true" ng-class={{getInputNotifcationClass(prStDe.dataElement.id,false)}}  class="form-control-ui-select"  placeholder="{{'select_or_search' | translate}}" >{{$item.dataElement.formName ? $item.dataElement.formName : $item.dataElement.displayName }}</ui-select-match>
+                    <ui-select-match allow-clear="true" ng-class={{getInputNotifcationClass(prStDe.dataElement.id,false)}}  class="form-control-ui-select"  placeholder="{{'select_or_search' | translate}}" >{{$item.dataElement.displayFormName ? $item.dataElement.displayFormName : $item.dataElement.displayName }}</ui-select-match>
                     <ui-select-choices repeat="prStDe.dataElement as prStDe in currentStage.multiSelectGroups[prStDe.dataElement.id].dataElements | filter: $select.search | limitTo:maxOptionSize">
-                        <span ng-bind-html="prStDe.dataElement.formName ? prStDe.dataElement.formName : prStDe.dataElement.displayName | highlight: $select.search"></span>
+                        <span ng-bind-html="prStDe.dataElement.displayFormName ? prStDe.dataElement.displayFormName : prStDe.dataElement.displayName | highlight: $select.search"></span>
                     </ui-select-choices>
                 </ui-select>
             </div>

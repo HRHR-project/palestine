@@ -23,10 +23,10 @@
                                 {{eventsInProgramStage[0].excecutionDateLabel}}-->
                             </th>
                             <th class="" ng-repeat="elementForProgramStage in dataElementsForProgramStage">                        
-                                {{elementForProgramStage.formName ? elementForProgramStage.formName : elementForProgramStage.displayName}}
+                                {{elementForProgramStage.displayFormName ? elementForProgramStage.displayFormName : elementForProgramStage.displayName}}
                             </th>                    
                             <!--<th class="col-md-2" ng-repeat="prStDe in dataElementsForProgramStage.programStageDataElements">
-                                {{prStDe.dataElement.formName ? prStDe.dataElement.formName : prStDe.dataElement.displayName}}
+                                {{prStDe.dataElement.displayFormName ? prStDe.dataElement.displayFormName : prStDe.dataElement.displayName}}
                                 <a ng-if="prStDes[prStDe.dataElement.id].dataElement.description" Title="{{prStDes[prStDe.dataElement.id].dataElement.description}}" ng-init="showHelpText[prStDe.dataElement.id] = false;" ng-click="showHelpText[prStDe.dataElement.id] = !showHelpText[prStDe.dataElement.id]">
                                     <span class="glyphicon glyphicon-info-sign" ></span>
                                     <span ng-show="showHelpText[prStDe.dataElement.id]" ><br>{{prStDes[prStDe.dataElement.id].dataElement.description}}</span>
