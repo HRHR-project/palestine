@@ -2762,7 +2762,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                     }
                                     else {
                                         //TODO: Alerts is going to be replaced with a proper display mecanism.
-                                        alert(prStDes[effect.dataElement.id].dataElement.formName + "Was blanked out and hidden by your last action");
+                                        alert(prStDes[effect.dataElement.id].dataElement.displayFormName + "Was blanked out and hidden by your last action");
                                     }
 
                                     //Blank out the value:

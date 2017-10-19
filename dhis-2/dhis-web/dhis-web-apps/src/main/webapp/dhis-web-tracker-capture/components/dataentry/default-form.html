@@ -13,7 +13,7 @@
         </thead>
         <tr class="col-md-12" ng-repeat="prStDe in currentStage.programStageDataElements" ng-if="!isHidden(prStDe.dataElement.id, currentEvent) || printMode === true">
             <td>
-                <span ng-bind="prStDe.dataElement.formName ? prStDe.dataElement.formName : prStDe.dataElement.displayName"></span>
+                <span ng-bind="prStDe.dataElement.displayFormName ? prStDe.dataElement.displayFormName : prStDe.dataElement.displayName"></span>
                 <span ng-if="prStDe.compulsory" class="required">*</span>
                 <span class="hideInPrint">
                     <a ng-if="prStDe.dataElement.description" Title="{{prStDe.dataElement.description}}" ng-init="showHelpText[prStDe.dataElement.id] = false;" ng-click="showHelpText[prStDe.dataElement.id] = !showHelpText[prStDe.dataElement.id]">
@@ -65,7 +65,7 @@
                                     <span>Gest.Age at visit</span>
                                 </td>
                                 <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
-                                    <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>                                
+                                    <span ng-bind="prStDes[de.dataElement.id].dataElement.displayFormName ? prStDes[de.dataElement.id].dataElement.displayFormName : prStDes[de.dataElement.id].dataElement.displayName"></span>                                
                                 </td>
                             </tr>
                         </thead>
@@ -112,7 +112,7 @@
                                 </td>
                                 <!--This is where the labels for the previous values are displayed.-->
                                 <td ng-repeat="de in section.programStageDataElements" ng-if="showPreviousValue(de.dataElement.id)">
-                                    <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>    
+                                    <span ng-bind="prStDes[de.dataElement.id].dataElement.displayFormName ? prStDes[de.dataElement.id].dataElement.displayFormName : prStDes[de.dataElement.id].dataElement.displayName"></span>    
                                 </td>
                             </tr>
                         </thead>
@@ -165,8 +165,8 @@
                         <tr ng-repeat="de in section.programStageDataElements" ng-if="!isHidden(de.dataElement.id) || printMode === true">
                             <td>
                                 <span>{{de.dataElement.id.id}}</span>
-                                <span>{{prStDes[de.dataElement.id].formName}}</span>
-                                <span ng-bind="prStDes[de.dataElement.id].dataElement.formName ? prStDes[de.dataElement.id].dataElement.formName : prStDes[de.dataElement.id].dataElement.displayName"></span>       
+                                <span>{{prStDes[de.dataElement.id].displayFormName}}</span>
+                                <span ng-bind="prStDes[de.dataElement.id].dataElement.displayFormName ? prStDes[de.dataElement.id].dataElement.displayFormName : prStDes[de.dataElement.id].dataElement.displayName"></span>       
                                 <span ng-if="prStDes[de.dataElement.id].compulsory" class="required">*</span>
                                 <span class="hideInPrint">
                                     <a ng-if="prStDes[de.dataElement.id].dataElement.description" Title="{{prStDes[de.dataElement.id].dataElement.description}}" ng-init="showHelpText[de.dataElement.id] = false;" ng-click="showHelpText[de.dataElement.id] = !showHelpText[de.dataElement.id]">
