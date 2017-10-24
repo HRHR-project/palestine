@@ -162,9 +162,9 @@
                         <span ng-bind="prStDe.dataElement.displayFormName ? prStDe.dataElement.displayFormName : prStDe.dataElement.displayName"></span>
                         <span ng-if="prStDe.compulsory" class="required">*</span>
                         <span class="hideInPrint">
-                            <a ng-if="prStDe.dataElement.description" Title="{{prStDe.dataElement.description}}" ng-init="showHelpText[prStDe.dataElement.id] = false;" ng-click="showHelpText[prStDe.dataElement.id] = !showHelpText[prStDe.dataElement.id]">
+                            <a ng-if="prStDe.dataElement.description || prStDe.dataElement.displayDescription" Title="{{prStDe.dataElement.displayDescription ? prStDe.dataElement.displayDescription : prStDe.dataElement.description}}" ng-init="showHelpText[prStDe.dataElement.id] = false;" ng-click="showHelpText[prStDe.dataElement.id] = !showHelpText[prStDe.dataElement.id]">
                                 <span class="glyphicon glyphicon-info-sign"></span>
-                                <span ng-show="showHelpText[prStDe.dataElement.id]" ><br>{{prStDe.dataElement.description}}</span>
+                                <span ng-show="showHelpText[prStDe.dataElement.id]" ><br>{{prStDe.dataElement.displayDescription ? prStDe.dataElement.displayDescription : prStDe.dataElement.description}}</span>
                             </a>                        
                         </span>                       
                     </div>
@@ -301,9 +301,9 @@
                                         <span ng-bind="prStDes[de.dataElement.id].dataElement.displayFormName ? prStDes[de.dataElement.id].dataElement.displayFormName : prStDes[de.dataElement.id].dataElement.displayName"></span>                                
                                         <span ng-if="prStDes[de.dataElement.id].compulsory" class="required">*</span>
                                         <span class="hideInPrint">
-                                            <a ng-if="prStDes[de.dataElement.id].dataElement.description" Title="{{prStDes[de.dataElement.id].dataElement.description}}" ng-init="showHelpText[de.dataElement.id] = false;" ng-click="showHelpText[de.dataElement.id] = !showHelpText[de.dataElement.id]">
+                                            <a ng-if="prStDes[de.dataElement.id].dataElement.description || prStDes[de.dataElement.id].dataElement.displayDescription" Title="{{prStDes[de.dataElement.id].dataElement.displayDescription ? prStDes[de.dataElement.id].dataElement.displayDescription : prStDes[de.dataElement.id].dataElement.description}}" ng-init="showHelpText[de.dataElement.id] = false;" ng-click="showHelpText[de.dataElement.id] = !showHelpText[de.dataElement.id]">
                                                 <span class="glyphicon glyphicon-info-sign" ></span>
-                                                <span ng-show="showHelpText[de.dataElement.id]" ><br>{{prStDes[de.dataElement.id].dataElement.description}}</span>
+                                                <span ng-show="showHelpText[de.dataElement.id]" ><br>{{prStDes[de.dataElement.id].dataElement.displayDescription ? prStDes[de.dataElement.id].dataElement.displayDescription : prStDes[de.dataElement.id].dataElement.description}}</span>
                                             </a>                                       
                                         </span>          
                                     </div>
