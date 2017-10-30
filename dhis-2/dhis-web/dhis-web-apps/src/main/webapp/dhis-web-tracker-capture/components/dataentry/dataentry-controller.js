@@ -524,6 +524,10 @@ trackerCapture.controller('DataEntryController',
         //In case the field contains a value, we cant hide it. 
         //If we hid a field with a value, it would falsely seem the user was aware that the value was entered in the UI.
         var EventToCheck = angular.isDefined(event) ? event : $scope.currentEvent;
+
+        if(event === null) {
+            EventToCheck = $scope.currentEvent;
+        }
         
         if (EventToCheck[id]) {
             return false;
