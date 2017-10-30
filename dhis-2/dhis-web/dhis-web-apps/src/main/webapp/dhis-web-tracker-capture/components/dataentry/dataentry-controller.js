@@ -520,16 +520,27 @@ trackerCapture.controller('DataEntryController',
     };
     
     //check if field is hidden
-    $scope.isHidden = function (id, event) {
+    $scope.isHidden = function (id, event, type, options) {
         //In case the field contains a value, we cant hide it. 
         //If we hid a field with a value, it would falsely seem the user was aware that the value was entered in the UI.
         var EventToCheck = angular.isDefined(event) ? event : $scope.currentEvent;
         
         if (EventToCheck[id]) {
             return false;
-        }
-        else {            
+        } else {            
             if(angular.isDefined($scope.hiddenFields[EventToCheck.event])){
+                //In the event a data element is a multi select group.
+                if(type === 'MULTI_SELECT_GROUP' && options) {
+                    var i = 0;
+                    angular.forEach(options, function(option){
+                        if(angular.isDefined($scope.hiddenFields[EventToCheck.event][option.dataElement.id]) && $scope.hiddenFields[EventToCheck.event][option.dataElement.id]) {
+                            //If the option is in the hiddenFields array and it is true (hidden): i++. 
+                            i++;
+                        }
+                    });
+                    //i will be the same as the length of all options if all options are in the hiddenFields array and are true (hidden).
+                    return options.length === i;
+                }
                 return $scope.hiddenFields[EventToCheck.event][id];
             }
             else {

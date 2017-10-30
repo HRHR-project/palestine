@@ -11,7 +11,7 @@
             </th>
         </tr>
         </thead>
-        <tr class="col-md-12" ng-repeat="prStDe in currentStage.programStageDataElements" ng-if="!isHidden(prStDe.dataElement.id, currentEvent) || printMode === true">
+        <tr class="col-md-12" ng-repeat="prStDe in currentStage.programStageDataElements" ng-if="!isHidden(prStDe.dataElement.id, currentEvent, prStDe.dataElement.valueType, currentStage.multiSelectGroups[prStDe.dataElement.id].dataElements) || printMode === true">
             <td>
                 <span ng-bind="prStDe.dataElement.displayFormName ? prStDe.dataElement.displayFormName : prStDe.dataElement.displayName"></span>
                 <span ng-if="prStDe.compulsory" class="required">*</span>
@@ -162,7 +162,7 @@
                     </tr>
                     </thead>
                     <tbody id="list">       
-                        <tr ng-repeat="de in section.programStageDataElements" ng-if="!isHidden(de.dataElement.id) || printMode === true">
+                        <tr ng-repeat="de in section.programStageDataElements" ng-if="!isHidden(de.dataElement.id, null, de.dataElement.valueType, currentStage.multiSelectGroups[de.dataElement.id].dataElements) || printMode === true">
                             <td>
                                 <span>{{de.dataElement.id.id}}</span>
                                 <span>{{prStDes[de.dataElement.id].displayFormName}}</span>
