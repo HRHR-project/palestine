@@ -1823,8 +1823,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:daysBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -1832,8 +1836,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:weeksBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+                                
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -1841,8 +1849,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:monthsBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -1850,8 +1862,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:yearsBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+                                
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
