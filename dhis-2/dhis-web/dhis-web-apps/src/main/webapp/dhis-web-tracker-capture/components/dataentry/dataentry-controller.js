@@ -268,7 +268,7 @@ trackerCapture.controller('DataEntryController',
                     }
                     else
                     {
-                        $scope.errorMessages.push(message);
+                        $scope.errorMessages[event].push(message);
                     }
                 }
                 else {

@@ -66,12 +66,14 @@ d2Directives.directive('d2NumberValidator', function() {
                 if(!value){
                     return !isRequired;
                 }
+
+                value = DateUtils.formatFromUserToApi(value);
+                var today = DateUtils.getToday();
+                today = DateUtils.formatFromUserToApi(today);
+
                 var maxDate = $parse(attrs.maxDate)(scope);
-                var convertedDate = DateUtils.format(angular.copy(value));
-                var isValid = value === convertedDate;                
-                if(isValid){
-                    isValid = maxDate === 0 ? !moment(convertedDate).isAfter(DateUtils.getToday()) : isValid;
-                }
+                var isValid = maxDate === 0 ? !moment(value).isAfter(today) : true;
+
                 return isValid;
             };
         }
