@@ -1397,7 +1397,8 @@ trackerCapture.controller('DataEntryController',
         }
         //Custom code for folkehelsa - Find wether the specific dataelement for X-visit schedule is present in this programstage:
         var xVisitsFound = false;
-        for(var i = $scope.currentStage.programStageDataElements.length-1;i >=0;i--) {
+        var indexesToRemove = [];
+        for(var i = 0; i < $scope.currentStage.programStageDataElements.length;i++) {
             var s = $scope.currentStage.programStageDataElements[i].dataElement;
             if($scope.currentStage.programStageDataElements[i].dataElement.id === 'ddsm9jQqz8k') {
                 $scope.xVisitScheduleDataElement = $scope.currentStage.programStageDataElements[i];
@@ -1408,6 +1409,7 @@ trackerCapture.controller('DataEntryController',
             var s = $scope.currentStage.programStageDataElements[i].dataElement;
             if($scope.currentStage.programStageDataElements[i].dataElement.dataElementGroups
                     && $scope.currentStage.programStageDataElements[i].dataElement.valueType === "TRUE_ONLY") {
+                var groupsAdded = 0;
                 angular.forEach($scope.currentStage.programStageDataElements[i].dataElement.dataElementGroups, function(dataElementGroup) {
                     //if the element it grouped, we only add a prStDe for the group element:
                     if( !$scope.currentStage.multiSelectGroups[dataElementGroup.id] ) {
@@ -1420,13 +1422,18 @@ trackerCapture.controller('DataEntryController',
                             $scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.description = "Complications that occur during pregnancy, labor and/or until 6 weeks postpartum";
                         }
                         //-------------
-                        $scope.currentStage.programStageDataElements.push($scope.currentStage.multiSelectGroups[dataElementGroup.id]);
+                        $scope.currentStage.programStageDataElements.splice(i+1+groupsAdded,0,$scope.currentStage.multiSelectGroups[dataElementGroup.id]);
+                        groupsAdded++;
                     }                    
                     $scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElements.push($scope.currentStage.programStageDataElements[i]);
-                    $scope.currentStage.programStageDataElements.splice(i,1);
+                    if(indexesToRemove.indexOf(i) == -1) indexesToRemove.push(i);
                 });
             }
         }
+        for (var i = indexesToRemove.length -1; i >= 0; i--){
+            $scope.currentStage.programStageDataElements.splice(indexesToRemove[i],1);
+        }
+        
         if(!xVisitsFound) {
             $scope.xVisitScheduleDataElement = false;
         }
