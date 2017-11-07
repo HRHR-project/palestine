@@ -206,6 +206,30 @@
                 <input type="checkbox" class="form-control-checkbox" ng-checked={{currentEvent[prStDes[de.dataElement.id].dataElement.id]}}>
             </div>
         </div>
+        <div ng-switch-when="MULTI_SELECT_GROUP">
+            <div class="hideInPrint">
+                <ui-select  ng-model="currentEvent[prStDes[de.dataElement.id].dataElement.id].selections"
+                            id="multiSelectGroup"
+                            ng-init="initMultiSelect(currentEvent)"
+                            theme="select2"
+                            ng-required={{prStDes[de.dataElement.id].compulsory}}
+                            ng-disabled="selectedEnrollment.status !== 'ACTIVE' || currentEvent.editingNotAllowed"
+                            name="foo"
+                            handle-dirty
+                            multiple
+                            on-remove="saveMultiSelectState($item,currentEvent,prStDes[de.dataElement.id],false)"
+                            on-select="saveMultiSelectState($item,currentEvent,prStDes[de.dataElement.id],true)"
+                            ng-style="{'width': '100%'}">
+                    <ui-select-match allow-clear="true" ng-class={{getInputNotifcationClass(de.dataElement.id,false)}}  class="form-control-ui-select"  placeholder="{{'select_or_search' | translate}}" >{{$item.dataElement.displayFormName ? $item.dataElement.displayFormName : $item.dataElement.displayName }}</ui-select-match>
+                    <ui-select-choices repeat="prStDe.dataElement as prStDe in currentStage.multiSelectGroups[de.dataElement.id].dataElements | filter: $select.search | limitTo:maxOptionSize">
+                        <span ng-bind-html="prStDe.dataElement.displayFormName ? prStDe.dataElement.displayFormName : prStDe.dataElement.displayName | highlight: $select.search"></span>
+                    </ui-select-choices>
+                </ui-select>
+            </div>
+            <div class="not-for-screen">
+                <input type="text" class="form-control" value={{currentEvent[de.dataElement.id]}}>
+            </div>
+        </div>
         <div ng-switch-when="LONG_TEXT">
             <div class="hideInPrint">
                     <textarea rows="3"
