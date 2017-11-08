@@ -1398,6 +1398,7 @@ trackerCapture.controller('DataEntryController',
         //Custom code for folkehelsa - Find wether the specific dataelement for X-visit schedule is present in this programstage:
         var xVisitsFound = false;
         var indexesToRemove = [];
+        
         for(var i = 0; i < $scope.currentStage.programStageDataElements.length;i++) {
             var s = $scope.currentStage.programStageDataElements[i].dataElement;
             if($scope.currentStage.programStageDataElements[i].dataElement.id === 'ddsm9jQqz8k') {
@@ -1413,7 +1414,7 @@ trackerCapture.controller('DataEntryController',
                 angular.forEach($scope.currentStage.programStageDataElements[i].dataElement.dataElementGroups, function(dataElementGroup) {
                     //if the element it grouped, we only add a prStDe for the group element:
                     if( !$scope.currentStage.multiSelectGroups[dataElementGroup.id] ) {
-                        $scope.currentStage.multiSelectGroups[dataElementGroup.id] = 
+                        $scope.currentStage.multiSelectGroups[dataElementGroup.id] = $scope.prStDes[dataElementGroup.id] =
                             {dataElement:{valueType:'MULTI_SELECT_GROUP',displayName:dataElementGroup.displayName,id:dataElementGroup.id},
                              dataElements: []};
                          
@@ -1442,15 +1443,49 @@ trackerCapture.controller('DataEntryController',
         //this need to be checked out, debugger
         //$scope.otherValuesLists = $scope.buildOtherValuesLists();
 
+        var multiSelectGroupsAddedToSection = {};
         angular.forEach($scope.currentStage.programStageSections, function (section) {
             section.open = true;
-            
+
             //Special case palestine, set section description
             if(section.id==='GweO3j7YA6a'){
                 section.description = "Conditions in first degree relatives; parents, siblings, children";
             }
+            var dataElementIndexesToRemove = [];
+
+            for(var i =0; i< section.programStageDataElements.length; i++){
+                var prStDe = $scope.prStDes[section.programStageDataElements[i].dataElement.id];
+
+                if(prStDe && prStDe.dataElement.dataElementGroups && prStDe.dataElement.valueType === "TRUE_ONLY"){
+                    var groupsAdded = 0;
+                    angular.forEach(prStDe.dataElement.dataElementGroups, function(dataElementGroup) {
+                        //if the element it grouped, we only add a prStDe for the group element:
+                        if(!multiSelectGroupsAddedToSection[dataElementGroup.id]){
+                            multiSelectGroupsAddedToSection[dataElementGroup.id] = { dataElements :[]};
+
+                            section.programStageDataElements.splice(i+1+groupsAdded,0,{ dataElement: { id: dataElementGroup.id}});
+                            groupsAdded++;
+                        }
+                        multiSelectGroupsAddedToSection[dataElementGroup.id].dataElements.push(prStDe);
+
+                        if(dataElementIndexesToRemove.indexOf(i) == -1) dataElementIndexesToRemove.push(i);
+                    });
+                }
+            }
+            
+            for (var i = dataElementIndexesToRemove.length -1; i >= 0; i--){
+                section.programStageDataElements.splice(dataElementIndexesToRemove[i],1);
+            }
         });
-        
+
+        if(multiSelectGroupsAddedToSection) {
+            for(var k in multiSelectGroupsAddedToSection){
+                if(multiSelectGroupsAddedToSection.hasOwnProperty(k) && $scope.currentStage.multiSelectGroups[k]){
+                    $scope.currentStage.multiSelectGroups[k].dataElements = multiSelectGroupsAddedToSection[k].dataElements;
+                }
+            }
+        }
+            
         $scope.setDisplayTypeForStage($scope.currentStage);
         
         $scope.customForm = CustomFormService.getForProgramStage($scope.currentStage, $scope.prStDes);        
