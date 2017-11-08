@@ -603,23 +603,19 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             return orgUnitPromise;
         },
         getSearchTreeRoot: function(){
-            //var roles = SessionStorageService.get('USER_ROLES');
             if(!rootOrgUnitPromise){
                 var url = '../api/organisationUnits.json?filter=level:eq:1&fields=id,name, displayName,children[id,name, displayName, children[id,name, displayName]]&paging=false';
-                /*if( roles && roles.userCredentials && roles.userCredentials.userRoles){
-                    var userRoles = roles.userCredentials.userRoles;
-                    for(var i=0; i<userRoles.length; i++){
-                        if(userRoles[i].authorities.indexOf('ALL') !== -1 || 
-                          userRoles[i].authorities.indexOf('F_TRACKED_ENTITY_INSTANCE_SEARCH_IN_ALL_ORGUNITS') !== -1 ){                        
-                          url = '../api/organisationUnits.json?filter=level:eq:1&fields=id,name,children[id,name,children[id,name]]&paging=false';
-                          i=userRoles.length;
-                        }
-                    }  
-                }*/
                 rootOrgUnitPromise = $http.get( url ).then(function(response){
                     return response.data;
                 });
             }
+            return rootOrgUnitPromise;
+        },
+        getSearchTreeRootBangladesh: function(){
+            var url = '../api/organisationUnits.json?filter=level:eq:3&fields=id,name, displayName,level,children[id,name, displayName, children[id,name, displayName]]&paging=false';
+            rootOrgUnitPromise = $http.get( url ).then(function(response){
+                return response.data;
+            });
             return rootOrgUnitPromise;
         },
         getOrgUnits: function(uid,fieldUrl){
