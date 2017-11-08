@@ -765,6 +765,18 @@ var trackerCaptureControllers = angular.module('trackerCaptureControllers', [])
             $scope.selectedSearchingOrgUnit = orgUnit;            
         }
     };
+
+    $scope.getBangladeshOrgUnits = function(){
+        OrgUnitFactory.getSearchTreeRootBangladesh().then(function(response) {  
+            $scope.orgUnits = response.organisationUnits;
+            angular.forEach($scope.orgUnits, function(ou){
+                ou.show = true;
+                angular.forEach(ou.children, function(o){                    
+                    o.hasChildren = o.children && o.children.length > 0 ? true : false;
+                });            
+            });
+        });
+    };
     
     function setFindAttributes(){
         $scope.findAttributes = angular.copy($scope.gridColumns);
