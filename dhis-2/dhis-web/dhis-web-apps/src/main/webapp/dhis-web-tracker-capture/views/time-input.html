@@ -1,0 +1,26 @@
+<div class="hideInPrint" ng-init="convertFrom24h(timeModel[timeModelId])">
+    <div class="input-group">
+        <input type="text"
+            ng-model="timeModel[timeModelId]"
+            placeholder="{{'hours_and_minutes' | translate}}"
+            class="form-control"
+            ng-class="timeUseNotification ? getInputNotifcationClass(timeModelId, timeModel) : ''"
+            d2-time-validator
+            d2-time-parser
+            ng-required="timeRequired"
+            ng-change="autoTimeFormat()"
+            ng-disabled="timeDisabled"
+            ng-blur="saveTime()"
+            name="foo"/>
+        <div class="input-group-btn" style="padding-top: 5px;">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{timeFormat}} <span class="caret"></span></button>
+            <ul class="dropdown-menu">
+                <li><a ng-click="setFormat('AM')">AM</a></li>
+                <li><a ng-click="setFormat('PM')">PM</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="not-fo-screen">
+    <input type="text" class="form-control" value={{timeModel[timeModelId]}}>
+</div>

@@ -352,6 +352,134 @@ var d2Directives = angular.module('d2Directives', [])
     };
 })
 
+.directive('d2Time', function() {
+    return {
+        restrict: 'E',            
+        templateUrl: "./views/time-input.html",
+        scope: {      
+            timeModel: '=',
+            timeModelId: '=',     
+            timeRequired: '=',
+            timeDisabled: '=',
+            timeSaveMethode: '&',
+            timeSaveMethodeParameter1: '=',
+            timeSaveMethodeParameter2: '=',
+            timeDisablePopup: '=',
+            timeUseNotification: "=",
+            timeElement: '='
+
+        },
+        link: function (scope, element, attrs) {
+            
+        },
+        controller: function($scope, ModalService) {
+            $scope.timeFormat = 'AM';
+
+            $scope.setFormat = function(format) {
+                if(format === 'AM') {
+                    $scope.timeFormat = 'AM';
+                } else {
+                    $scope.timeFormat = 'PM';
+                }
+            };
+
+            $scope.convertTo24h = function(time) {
+                var timeSplit = time.split(':');
+                if(timeSplit[0] > 12) {
+                    $scope.timeModel[$scope.timeModelId] = timeSplit[0]*2 + ':' + timeSplit[1];
+                }
+            };
+
+            $scope.convertFrom24h = function(time) {
+                var timeSplit = time.split(':');
+                if(timeSplit[0] > 12) {
+                    $scope.setFormat('AM');
+                    $scope.timeModel[$scope.timeModelId] = timeSplit[0]%12 + ':' + timeSplit[1];
+                }
+            };
+
+            $scope.saveTime = function() {
+                if(!$scope.timeModel[$scope.timeModelId] || $scope.timeModel[$scope.timeModelId].match(/^(\d\d:\d\d)$/)) {
+                    $scope.timeSaveMethode()($scope.timeSaveMethodeParameter1, $scope.timeSaveMethodeParameter2);
+                } else if (!$scope.timeDisablePopup) {
+                    var modalOptions = {
+                        headerText: 'warning',
+                        bodyText: 'wrong_time_format'
+                    };
+                    
+                    ModalService.showModal({},modalOptions);
+                    return;
+                }
+            };
+
+            $scope.getInputNotifcationClass = function(id, event){
+                if($scope.timeModel[$scope.timeModelId] && !$scope.timeModel[$scope.timeModelId].match(/^(\d\d:\d\d)$/)) {
+                    return 'form-control input-pending';
+                }
+
+                if($scope.timeElement.id && $scope.timeElement.id === id && $scope.timeElement.event && $scope.timeElement.event === event.event) {
+                    if($scope.timeElement.pending) {
+                        return 'form-control input-pending';
+                    }
+                    
+                    if($scope.timeElement.saved) {
+                        return 'form-control input-success';
+                    } else {
+                        return 'form-control input-error';
+                    }            
+                }  
+                return 'form-control';
+            };
+        }
+    };
+})
+
+.directive("d2TimeValidator", function() {
+    return {
+        restrict: "A",         
+        require: "ngModel",         
+        link: function(scope, element, attrs, ngModel) {        	
+           
+            var isRequired = attrs.ngRequired === 'true';
+        	
+            ngModel.$validators.timeValidator = function(value) {
+                if(!value){
+                    return !isRequired;
+                }
+                return /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(value);                
+            };
+        }
+    };
+})
+
+.directive("d2TimeParser", function() {
+    return {
+        restrict: "A",         
+        require: "ngModel",         
+        link: function(scope, element, attrs, ngModel) {
+            ngModel.$parsers.push(function(value){
+                if( /^(\d\d\d)$/.test(value)){
+                    var convertedValue = value.substring(0, 2) + ":" + value.charAt(2);
+                    ngModel.$setViewValue(convertedValue);
+                    ngModel.$commitViewValue();
+                    ngModel.$render();
+                    return convertedValue;
+                }
+
+                if(value.length > 5){
+                    var convertedValue = value.substring(0, 5);
+                    ngModel.$setViewValue(convertedValue);
+                    ngModel.$commitViewValue();
+                    ngModel.$render();
+                    return convertedValue;
+                }
+
+                return value;                
+            });
+        }
+    };
+})
+
 .directive('d2FileInput', function($translate, DHIS2EventService, DHIS2EventFactory, FileService, NotificationService){
     return {
         restrict: "A",
