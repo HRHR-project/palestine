@@ -378,8 +378,10 @@ var d2Directives = angular.module('d2Directives', [])
             $scope.setFormat = function(format) {
                 if(format === 'AM') {
                     $scope.timeFormat = 'AM';
-                } else {
+                } else if(format === 'PM') {
                     $scope.timeFormat = 'PM';
+                } else if(format === '24h') {
+                    $scope.timeFormat = '24h';
                 }
             };
 
@@ -393,7 +395,8 @@ var d2Directives = angular.module('d2Directives', [])
             $scope.convertFrom24h = function(time) {
                 var timeSplit = time.split(':');
                 if(timeSplit[0] > 12) {
-                    $scope.setFormat('AM');
+                    $scope.setFormat('PM');
+                    console.log($scope.timeFormat);
                     $scope.timeModel[$scope.timeModelId] = timeSplit[0]%12 + ':' + timeSplit[1];
                 }
             };
