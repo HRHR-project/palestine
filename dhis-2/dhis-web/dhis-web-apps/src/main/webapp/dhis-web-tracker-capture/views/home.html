@@ -62,7 +62,7 @@
         <div class="row" ng-cloak ng-if="programs.length > 1">
             <!-- Was commented out -->
             <div class="col-md-4 small-vertical-spacing hideInPrint">
-                <label>Selected program:</label>
+                <label>{{'selected_program'| translate}}</label>
                 <ui-select ng-model="model.selectedProgram" 
                         theme="select2" 
                         on-select="getProgramAttributes(model.selectedProgram)"
