@@ -365,42 +365,19 @@ var d2Directives = angular.module('d2Directives', [])
             timeSaveMethodeParameter1: '=',
             timeSaveMethodeParameter2: '=',
             timeDisablePopup: '=',
-            timeUseNotification: "=",
-            timeElement: '='
+            timeUseNotification: '=',
+            timeElement: '=',
+            timeFormat: '='
 
         },
         link: function (scope, element, attrs) {
             
         },
         controller: function($scope, ModalService) {
+            $scope.use24 = false;
             $scope.timeFormat = 'AM';
-
-            $scope.setFormat = function(format) {
-                if(format === 'AM') {
-                    $scope.timeFormat = 'AM';
-                } else if(format === 'PM') {
-                    $scope.timeFormat = 'PM';
-                } else if(format === '24h') {
-                    $scope.timeFormat = '24h';
-                }
-            };
-
-            $scope.convertTo24h = function(time) {
-                var timeSplit = time.split(':');
-                if(timeSplit[0] > 12) {
-                    $scope.timeModel[$scope.timeModelId] = timeSplit[0]*2 + ':' + timeSplit[1];
-                }
-            };
-
-            $scope.convertFrom24h = function(time) {
-                var timeSplit = time.split(':');
-                if(timeSplit[0] > 12) {
-                    $scope.setFormat('PM');
-                    console.log($scope.timeFormat);
-                    $scope.timeModel[$scope.timeModelId] = timeSplit[0]%12 + ':' + timeSplit[1];
-                }
-            };
-
+            $scope.base = {};            
+            
             $scope.saveTime = function() {
                 if(!$scope.timeModel[$scope.timeModelId] || $scope.timeModel[$scope.timeModelId].match(/^(\d\d:\d\d)$/)) {
                     $scope.timeSaveMethode()($scope.timeSaveMethodeParameter1, $scope.timeSaveMethodeParameter2);
@@ -413,6 +390,65 @@ var d2Directives = angular.module('d2Directives', [])
                     ModalService.showModal({},modalOptions);
                     return;
                 }
+               
+            };
+
+            $scope.save12hTime = function(){
+                $scope.timeModel[$scope.timeModelId] = $scope.convertTo24h($scope.base.temp12hTime);
+                $scope.saveTime();
+
+            }
+            
+            $scope.setFormat = function (format) {
+                if(format === 'AM') {
+                    $scope.timeFormat = 'AM';
+                } else if(format === 'PM') {
+                    $scope.timeFormat = 'PM';
+                } else if(format === '24h') {
+                    $scope.timeFormat = '24h';
+                }
+            };
+
+            $scope.convertTo24h = function(time) {
+                if(!time) {
+                    return;
+                }
+                var timeSplit = time.split(':');
+                
+                if($scope.timeFormat === 'PM') {
+                    timeSplit[0] = parseInt(timeSplit[0]) + 12 + '';
+                }
+
+                if($scope.timeFormat === 'AM' && timeSplit[0] === '12') {
+                    timeSplit[0] = '00';
+                }
+
+                if($scope.timeFormat === 'PM' && timeSplit[0] === '24') {
+                    timeSplit[0] = '12';
+                }
+                return timeSplit[0] + ':' + timeSplit[1];
+            };
+
+            $scope.convertFrom24h = function(time) {
+                if(!time) {
+                    $scope.setFormat('AM');
+                    return;
+                }
+                var timeSplit = time.split(':');
+                if(timeSplit[0] > 12) {
+                    $scope.setFormat('PM');
+                    var addZero = timeSplit[0]%12 < 10 ? '0' : '';
+                    return addZero + timeSplit[0]%12 + ':' + timeSplit[1];
+                } else if(timeSplit[0] === '12') {
+                    $scope.setFormat('PM');
+                    return time;
+                } else {
+                    if(timeSplit[0] === '00') {
+                        timeSplit[0] = '12';
+                    }
+                    $scope.setFormat('AM');
+                    return timeSplit[0] + ':' + timeSplit[1];
+                }
             };
 
             $scope.getInputNotifcationClass = function(id, event){
@@ -420,7 +456,7 @@ var d2Directives = angular.module('d2Directives', [])
                     return 'form-control input-pending';
                 }
 
-                if($scope.timeElement.id && $scope.timeElement.id === id && $scope.timeElement.event && $scope.timeElement.event === event.event) {
+                if($scope.timeElement && $scope.timeElement.id === id && $scope.timeElement.event && $scope.timeElement.event === event.event) {
                     if($scope.timeElement.pending) {
                         return 'form-control input-pending';
                     }
@@ -433,6 +469,8 @@ var d2Directives = angular.module('d2Directives', [])
                 }  
                 return 'form-control';
             };
+
+            $scope.base.temp12hTime = $scope.convertFrom24h($scope.timeModel[$scope.timeModelId]);
         }
     };
 })
@@ -450,6 +488,24 @@ var d2Directives = angular.module('d2Directives', [])
                     return !isRequired;
                 }
                 return /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/.test(value);                
+            };
+        }
+    };
+})
+
+.directive("d2TimeAmPmValidator", function() {
+    return {
+        restrict: "A",         
+        require: "ngModel",         
+        link: function(scope, element, attrs, ngModel) {        	
+           
+            var isRequired = attrs.ngRequired === 'true';
+
+            ngModel.$validators.timeValidator = function(value) {
+                if(!value){
+                    return !isRequired;
+                }
+                return /^(0[1-9]|1[0-2]):[0-5][0-9]$/.test(value);                
             };
         }
     };

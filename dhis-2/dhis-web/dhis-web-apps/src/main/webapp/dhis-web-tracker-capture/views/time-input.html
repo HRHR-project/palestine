@@ -1,28 +1,38 @@
-<div class="hideInPrint" ng-init="convertFrom24h(timeModel[timeModelId])">
-    <div class="input-group">
+<div class="hideInPrint" ng-if="use24">
+    <input type="text"
+        ng-model="timeModel[timeModelId]"
+        placeholder="{{'hours_and_minutes' | translate}}"
+        class="form-control"
+        ng-class="timeUseNotification ? getInputNotifcationClass(timeModelId, timeModel) : ''"
+        d2-time-validator
+        d2-time-parser
+        ng-required="timeRequired"
+        ng-disabled="timeDisabled"
+        ng-blur="saveTime()"
+        name="foo"/>
+</div>
+<div class="hideInPrint" ng-if="!use24">
+    <div class="input-group" style="padding-bottom: 5px;">
         <input type="text"
-            ng-model="timeModel[timeModelId]"
+            ng-model="base.temp12hTime"
             placeholder="{{'hours_and_minutes' | translate}}"
             class="form-control"
             ng-class="timeUseNotification ? getInputNotifcationClass(timeModelId, timeModel) : ''"
-            d2-time-validator
+            d2-time-am-pm-validator
             d2-time-parser
             ng-required="timeRequired"
-            ng-change="autoTimeFormat()"
             ng-disabled="timeDisabled"
-            ng-blur="saveTime()"
+            ng-blur="save12hTime()"
             name="foo"/>
         <div class="input-group-btn" style="padding-top: 5px;">
-            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{timeFormat}} <span class="caret"></span></button>
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="border-color: #aaaaaa;">{{timeFormat}} <span class="caret"></span></button>
             <ul class="dropdown-menu">
-                <li><a ng-click="setFormat('AM')">AM</a></li>
-                <li><a ng-click="setFormat('PM')">PM</a></li>
-                <li role="separator" class="divider"></li>                
-                <li><a ng-click="setFormat('24h')">24h</a></li>
+                <li><a ng-click="setFormat('AM'); save12hTime()">AM</a></li>
+                <li><a ng-click="setFormat('PM'); save12hTime()">PM</a></li>
             </ul>
         </div>
     </div>
 </div>
-<div class="not-fo-screen">
+<div class="not-for-screen">
     <input type="text" class="form-control" value={{timeModel[timeModelId]}}>
 </div>
