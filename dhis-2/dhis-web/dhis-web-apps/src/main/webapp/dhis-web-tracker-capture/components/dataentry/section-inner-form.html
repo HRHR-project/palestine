@@ -200,7 +200,7 @@
                      time-use-notification="true"
                      time-element="currentElement"
                      time-disabled="selectedOrgUnit.closedStatus || selectedEnrollment.status !== 'ACTIVE' || currentEvent.editingNotAllowed || assignedFields[currentEvent.event][de.id] ? true : false"
-                     time-format="'12h'">
+                     time-format="prStDes[de.dataElement.id].dataElement.code">
             </d2-time>
         </div>
         <div ng-switch-when="TRUE_ONLY">

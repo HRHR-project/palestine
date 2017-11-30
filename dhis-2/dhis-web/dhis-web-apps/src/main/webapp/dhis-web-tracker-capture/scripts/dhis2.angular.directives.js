@@ -375,7 +375,6 @@ var d2Directives = angular.module('d2Directives', [])
         },
         controller: function($scope, ModalService) {
             $scope.use24 = false;
-            $scope.timeFormat = 'AM';
             $scope.base = {};            
             
             $scope.saveTime = function() {
