@@ -282,6 +282,19 @@
                                            blur-or-change="saveDatavalue(prStDe, $eval('eventRowForm' + eventRow.event + '.' + eventRow.event + prStDe.dataElement.id))"
                                            name="{{eventRow.event}}{{prStDe.dataElement.id}}"/>
                                 </div>
+                                <div ng-switch-when="TIME">
+                                    <d2-time time-model="eventRow"
+                                             time-model-id="prStDe.dataElement.id"
+                                             time-required={{prStDe.compulsory}}
+                                             time-save-methode="saveDatavalue"
+                                             time-save-methode-parameter1="prStDe"
+                                             time-save-methode-parameter2="$eval('eventRowForm' + eventRow.event + '.' + eventRow.event + prStDe.dataElement.id)"
+                                             time-use-notification="true"
+                                             time-element="currentElement"
+                                             time-disabled="selectedEnrollment.status !== 'ACTIVE' || eventRow.editingNotAllowed || assignedFields[eventRow.event][prStDe.dataElement.id]"
+                                             time-format="timeFormat">
+                                    </d2-time>
+                                </div>
                                 <div ng-switch-when="TRUE_ONLY">
                                     <input type="checkbox"
                                            class="form-control"

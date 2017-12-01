@@ -474,6 +474,7 @@ var d2Directives = angular.module('d2Directives', [])
     };
 })
 
+//These two validation directives should be moved to dhis2.angular.validations.js
 .directive("d2TimeValidator", function() {
     return {
         restrict: "A",         
