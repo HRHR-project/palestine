@@ -21,6 +21,8 @@ trackerCapture.controller('RegistrationController',
                 TEIGridService,
                 TrackerRulesFactory,
                 TrackerRulesExecutionService,
+                UsersService,
+                OrgUnitFactory,
                 ModalService) {
     
     $scope.maxOptionSize = 30;
@@ -31,6 +33,9 @@ trackerCapture.controller('RegistrationController',
     $scope.tei = {};
     $scope.registrationMode = 'REGISTRATION';    
     $scope.hiddenFields = {};
+
+    //Placeholder till proper settings for time is implemented. Currently hard coded to 12h format.
+    $scope.timeFormat = '12h';
     
     $scope.helpTexts = {};
     
@@ -48,7 +53,7 @@ trackerCapture.controller('RegistrationController',
             
             CurrentSelection.setAttributesById($scope.attributesById);
         });
-    }    
+    }
     
     $scope.optionSets = CurrentSelection.getOptionSets();        
     if(!$scope.optionSets){
@@ -184,8 +189,8 @@ trackerCapture.controller('RegistrationController',
     };
     
     var performRegistration = function(destination){
-        RegistrationService.registerOrUpdate($scope.tei, $scope.optionSets, $scope.attributesById).then(function(registrationResponse){
-            var reg = registrationResponse.response ? registrationResponse.response : {};            
+        RegistrationService.registerOrUpdate($scope.tei, $scope.optionSets, $scope.attributesById).then(function(regResponse){
+            var reg = regResponse.response.responseType ==='ImportSummaries' ? regResponse.response.importSummaries[0] : regResponse.response.responseType === 'ImportSummary' ? regResponse.response : {};
             if(reg.reference && reg.status === 'SUCCESS'){                
                 $scope.tei.trackedEntityInstance = reg.reference;
                 
@@ -244,7 +249,7 @@ trackerCapture.controller('RegistrationController',
             else{//update/registration has failed
                 var dialogOptions = {
                         headerText: $scope.tei && $scope.tei.trackedEntityInstance ? 'update_error' : 'registration_error',
-                        bodyText: registrationResponse.message
+                        bodyText: regResponse.message
                     };
                 DialogService.showDialog({}, dialogOptions);
                 return;
@@ -284,7 +289,53 @@ trackerCapture.controller('RegistrationController',
             return false;
         }        
         performRegistration(destination);
-    }; 
+    };
+
+    OrgUnitFactory.getSearchTreeRoot().then(function(response) {  
+        $scope.orgUnits = response.organisationUnits;
+        angular.forEach($scope.orgUnits, function(ou){
+            ou.show = true;
+            angular.forEach(ou.children, function(o){                    
+                o.hasChildren = o.children && o.children.length > 0 ? true : false;
+            });            
+        });
+    });
+
+    $scope.expandCollapse = function(orgUnit) {
+        if( orgUnit.hasChildren ){            
+            //Get children for the selected orgUnit
+            OrgUnitFactory.get(orgUnit.id).then(function(ou) {                
+                orgUnit.show = !orgUnit.show;
+                orgUnit.hasChildren = false;
+                orgUnit.children = ou.organisationUnits[0].children;                
+                angular.forEach(orgUnit.children, function(ou){                    
+                    ou.hasChildren = ou.children && ou.children.length > 0 ? true : false;
+                });                
+            });           
+        }
+        else{
+            orgUnit.show = !orgUnit.show;   
+        }        
+    };
+
+    $scope.setSelectedSearchingOrgUnitFromId = function(id){    
+        if(id) {
+            OrgUnitFactory.get(id).then(function(response) {  
+                $scope.setSelectedSearchingOrgUnit(response.organisationUnits[0]);
+            });
+        } else {
+            $scope.setSelectedSearchingOrgUnit(null);
+        }
+    };
+    
+    //load programs for the selected orgunit (from tree)
+    $scope.setSelectedSearchingOrgUnit = function(orgUnit){    
+        if(orgUnit === $scope.selectedSearchingOrgUnit) {
+            $scope.selectedSearchingOrgUnit = null;
+        } else {
+            $scope.selectedSearchingOrgUnit = orgUnit;            
+        }
+    };
     
     var processRuleEffect = function(){        
         $scope.warningMessages = [];        
@@ -383,7 +434,6 @@ trackerCapture.controller('RegistrationController',
     
     $scope.$on('changeOrgUnit', function (event, args) {
         $scope.tei.orgUnit = args.orgUnit;
-        $scope.registerEntity("newOrgUnit");
     });
 
 

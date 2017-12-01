@@ -1785,7 +1785,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                     var brokenExecution = false;
                     angular.forEach(dhisFunctions, function(dhisFunction){
                         //Select the function call, with any number of parameters inside single quotations, or number parameters witout quotations
-                        var regularExFunctionCall = new RegExp(dhisFunction.name + "\\( *(([\\d/\\*\\+\\-%\.]+)|( *'[^']*'))*( *, *(([\\d/\\*\\+\\-%\.]+)|'[^']*'))* *\\)",'g');
+                        var regularExFunctionCall = new RegExp(dhisFunction.name + "\\( *(([\\d/\\*\\+\\-%\.]+)|( *'[^']*'))*( *, *(([\\d/\\*\\+\\-%\.]+)|'[^']*'|true|false))* *\\)",'g');
                         var callsToThisFunction = expression.match(regularExFunctionCall);
                         angular.forEach(callsToThisFunction, function(callToThisFunction){
                             //Remove the function name and paranthesis:
@@ -1823,8 +1823,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:daysBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -1832,8 +1836,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:weeksBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+                                
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -1841,8 +1849,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:monthsBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -1850,8 +1862,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                 expressionUpdated = true;
                             }
                             else if(dhisFunction.name === "d2:yearsBetween") {
-                                var firstdate = $filter('trimquotes')(parameters[0]);
-                                var seconddate = $filter('trimquotes')(parameters[1]);
+                                var firstdate = DateUtils.formatFromUserToApi(parameters[0]);
+                                firstdate = $filter('trimquotes')(firstdate);
+
+                                var seconddate = DateUtils.formatFromUserToApi(parameters[1]);
+                                seconddate = $filter('trimquotes')(seconddate);
+                                
                                 firstdate = moment(firstdate);
                                 seconddate = moment(seconddate);
                                 //Replace the end evaluation of the dhis function:
@@ -2762,7 +2778,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                     }
                                     else {
                                         //TODO: Alerts is going to be replaced with a proper display mecanism.
-                                        alert(prStDes[effect.dataElement.id].dataElement.formName + "Was blanked out and hidden by your last action");
+                                        alert(prStDes[effect.dataElement.id].dataElement.displayFormName + "Was blanked out and hidden by your last action");
                                     }
 
                                     //Blank out the value:
@@ -2980,6 +2996,22 @@ var d2Services = angular.module('d2Services', ['ngResource'])
             }
         }
     })
+
+    .service('UsersService', function( $http, $translate) {
+        return {
+            getAll: function(){
+                var promise = $http.get("../api/users?paging=false&fields=*").then(function (response) {
+                    var users = [];
+                    angular.forEach(response.data.users, function (user) {
+                        var userObj = {username: user.userCredentials.username, orgUnits: user.organisationUnits, name: user.userCredentials.displayName, roles: user.userCredentials.userRoles};
+                        users.push(userObj);
+                    });
+                    return users;
+                });
+                return promise;
+            }
+        };
+    })    
 
     .service('AuditHistoryDataService', function( $http, $translate, DialogService) {
         this.getAuditHistoryData = function(dataId, dataType ) {

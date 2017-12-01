@@ -1,7 +1,7 @@
 package org.hisp.dhis.scheduling;
 
 /*
- * Copyright (c) 2004-2016, University of Oslo
+ * Copyright (c) 2004-2017, University of Oslo
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ public interface SchedulingManager
     String TASK_ANALYTICS_LAST_3_YEARS = "analyticsLast3YearsTask";
     String TASK_MONITORING_LAST_DAY = "monitoringLastDayTask";
     String TASK_DATA_SYNCH = "dataSynchTask";
-    String TASK_META_DATA_SYNC = "metaDataSyncTask";
+    String TASK_META_DATA_SYNC = "metadataSyncTask";
     String TASK_SEND_SCHEDULED_SMS_NOW = "sendScheduledMessageTaskNow";
     String TASK_SCHEDULED_PROGRAM_NOTIFICATIONS = "scheduledProgramNotificationsTask";
     

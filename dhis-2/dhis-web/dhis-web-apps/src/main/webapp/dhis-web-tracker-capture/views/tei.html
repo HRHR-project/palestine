@@ -1,4 +1,10 @@
+<!-- Replaced the spinner with a more descriptive alert
 <i ng-if="!teiFetched" class="fa fa-spinner fa-spin fa-2x vertical-spacing"></i>
+-->
+<div class="alert alert-warning vertical-spacing" ng-if="!teiFetched">
+        No Program Selected
+</div>
+    
 <div ng-if="teiFetched">
     <div class="alert alert-warning vertical-spacing" ng-if="trackedEntityList.length === 0 || !trackedEntityList.length">
         {{'no'| translate}} {{selectedProgram.trackedEntity.displayName|| 'records' | translate}} {{'found'| translate}}
@@ -41,6 +47,14 @@
                             </span>
                             <span ng-switch-when="trueOnly">
                                 <span ng-if="trackedEntity[gridColumn.id] === 'true'"><i class="fa fa-check"></i></span>
+                            </span>
+                            <span ng-switch-when="DATE">
+                                    <span>{{convertDate(trackedEntity[gridColumn.id])}}</span>
+                                </span>
+                            <span ng-switch-when="ORGANISATION_UNIT">
+                                <span>
+                                    {{allOrgUnits[trackedEntity[gridColumn.id]].displayName || allOrgUnits[trackedEntity[gridColumn.id]].name}}
+                                </span>
                             </span>
                             <span ng-switch-default>{{trackedEntity[gridColumn.id]}}</span>
                         </span>

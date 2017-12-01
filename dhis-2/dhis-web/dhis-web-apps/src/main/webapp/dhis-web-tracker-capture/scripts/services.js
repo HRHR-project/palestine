@@ -23,7 +23,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
     var ButtonIds = { Complete: "Complete", Incomplete: "Incomplete", Validate: "Validate", Delete: "Delete", Skip: "Skip", Unskip: "Unskip", Note: "Note" };
       
     var w = {};
-    w.enrollmentWidget = {title: 'enrollment', view: "components/enrollment/enrollment.html", show: false, expand: true, parent: 'smallerWidget', order: 12, showHideAllowed: true};
+    w.enrollmentWidget = {title: 'enrollment', view: "components/enrollment/enrollment.html", show: true, expand: true, parent: 'smallerWidget', order: 12, showHideAllowed: true};
     //w.indicatorWidget = {title: 'indicators', view: "components/rulebound/rulebound.html", show: true, expand: true, parent: 'smallerWidget', order: 1, showHideAllowed: false};
     w.dataentryWidget = {title: 'dataentry', view: "components/dataentry/dataentry.html", show: true, expand: true, parent: 'biggerWidget', order: 2,showHideAllowed: false};
     w.reportWidget = {title: 'report', view: "components/report/tei-report.html", show: false, expand: true, parent: 'biggerWidget', order: 3, showHideAllowed: true};
@@ -119,6 +119,33 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
         }
     };
 })
+
+.service('SystemSettingsService', function($http) {
+    return {
+        getCountry: function(){
+            var promise = $http.get('../api/systemSettings/keyCountry').then(function(response){
+                return response.data;
+            }, function(){
+                return null;
+            });
+            return promise;            
+        }
+    };
+})
+
+.service('DataStoreService', function($http) {
+    return {
+        getCountry: function(){
+            var promise = $http.get('../api/dataStore/mch-tracker/country').then(function(response){
+                return response.data.country;
+            }, function(){
+                return null;
+            });
+            return promise;            
+        }
+    };
+})
+
 
 /* current selections */
 .service('PeriodService', function(DateUtils, CalendarService, $filter){
@@ -533,24 +560,62 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             }
             return orgUnitPromise;
         },
+        getAll: function(){            
+            orgUnitPromise = $http.get( '../api/organisationUnits.json?' + '&fields=id,name,displayName,&paging=false' ).then(function(response){
+                return response.data;
+            });
+            return orgUnitPromise;
+        },
+
+        //Gets all related orgunits, based on the root(uid) orgunit.
+        getIdDown: function(uid){    
+            var allDownId = [];
+            var allOrgUnits = [];
+            var rootOrgUnit = null;
+
+            orgUnitPromise = $http.get( '../api/organisationUnits.json?fields=id,level,children[id,level]&paging=false' ).then(function(response){
+                allOrgUnits = response.data.organisationUnits;
+                angular.forEach(response.data.organisationUnits, function(orgUnit){
+                    if(orgUnit.id === uid){
+                        rootOrgUnit = orgUnit;                               
+                    }                        
+                });
+                getAllRelated(rootOrgUnit);
+
+                //Recursive methode for finding all related orgUnits.
+                function getAllRelated(ou) {
+                    angular.forEach(allOrgUnits, function(orgUnit){
+                        if(orgUnit.id === ou.id){
+                            allDownId.push(orgUnit.id);                         
+                            if(!orgUnit.children) {
+                                return;
+                            } else {
+                                angular.forEach(orgUnit.children, function(child){
+                                    getAllRelated(child);                        
+                                });      
+                            }                         
+                        }                        
+                    });
+                }
+                return allDownId;
+            });
+
+            return orgUnitPromise;
+        },
         getSearchTreeRoot: function(){
-            //var roles = SessionStorageService.get('USER_ROLES');
             if(!rootOrgUnitPromise){
-                var url = '../api/me.json?fields=organisationUnits[id,name,displayName,level,children[id,name,displayName,level,children[id,name,displayName,level]]]&paging=false';
-                /*if( roles && roles.userCredentials && roles.userCredentials.userRoles){
-                    var userRoles = roles.userCredentials.userRoles;
-                    for(var i=0; i<userRoles.length; i++){
-                        if(userRoles[i].authorities.indexOf('ALL') !== -1 || 
-                          userRoles[i].authorities.indexOf('F_TRACKED_ENTITY_INSTANCE_SEARCH_IN_ALL_ORGUNITS') !== -1 ){                        
-                          url = '../api/organisationUnits.json?filter=level:eq:1&fields=id,name,children[id,name,children[id,name]]&paging=false';
-                          i=userRoles.length;
-                        }
-                    }  
-                }*/
+                var url = '../api/organisationUnits.json?filter=level:eq:1&fields=id,name, displayName,children[id,name, displayName, children[id,name, displayName]]&paging=false';
                 rootOrgUnitPromise = $http.get( url ).then(function(response){
                     return response.data;
                 });
             }
+            return rootOrgUnitPromise;
+        },
+        getSearchTreeRootBangladesh: function(){
+            var url = '../api/organisationUnits.json?filter=level:eq:3&fields=id,name, displayName,level,children[id,name, displayName, children[id,name, displayName]]&paging=false';
+            rootOrgUnitPromise = $http.get( url ).then(function(response){
+                return response.data;
+            });
             return rootOrgUnitPromise;
         },
         getOrgUnits: function(uid,fieldUrl){
@@ -1052,14 +1117,14 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
     return {     
         
         getEventsByStatus: function(entity, orgUnit, program, programStatus){   
-            var promise = $http.get( '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&orgUnit=' + orgUnit + '&program=' + program + '&programStatus=' + programStatus  + '&paging=false').then(function(response){
+            var promise = $http.get( '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&orgUnit=' + orgUnit + '&program=' + program + '&programStatus=' + programStatus  + '&skipPaging=true').then(function(response){
                 return response.data.events;
             });            
             return promise;
         },
         getEventsByProgram: function(entity, program){   
             
-            var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&paging=false';            
+            var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&skipPaging=true';            
             if(program){
                 url = url + '&program=' + program;
             }
@@ -1069,7 +1134,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             return promise;
         },
         getEventsByProgramStage: function(entity, programStage){
-          var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&paging=false'; 
+          var url = '../api/events.json?ouMode=ACCESSIBLE&' + 'trackedEntityInstance=' + entity + '&skipPaging=true'; 
           if(programStage){
               url += '&programStage='+programStage;
           }
@@ -1081,10 +1146,10 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
         getByOrgUnitAndProgram: function(orgUnit, ouMode, program, startDate, endDate){
             var url;
             if(startDate && endDate){
-                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&startDate=' + startDate + '&endDate=' + endDate + '&paging=false';
+                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&startDate=' + startDate + '&endDate=' + endDate + '&skipPaging=true';
             }
             else{
-                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&paging=false';
+                url = '../api/events.json?' + 'orgUnit=' + orgUnit + '&ouMode='+ ouMode + '&program=' + program + '&skipPaging=true';
             }
             var promise = $http.get( url ).then(function(response){
                 return response.data.events;
