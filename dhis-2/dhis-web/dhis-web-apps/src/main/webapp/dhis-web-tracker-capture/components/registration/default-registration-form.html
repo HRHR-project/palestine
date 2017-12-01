@@ -48,6 +48,17 @@
                                blur-or-change="teiValueUpdated(selectedTei, attribute.id)"
                                ng-required="attribute.mandatory || attribute.unique"/>
                     </span>
+                    <div ng-switch-when="TIME">
+                        <d2-time time-model="selectedTei"
+                                 time-model-id="attribute.id"
+                                 time-required="attribute.mandatory || attribute.unique"
+                                 time-save-methode="teiValueUpdated"
+                                 time-save-methode-parameter1="selectedTei"
+                                 time-save-methode-parameter2="attribute.id"
+                                 time-disabled="editingDisabled"
+                                 time-format="timeFormat">
+                        </d2-time>
+                    </div>
                     <span ng-switch-when="TRUE_ONLY">
                         <input type="checkbox" 
                                name="foo" 
@@ -257,7 +268,9 @@
                                ng-required="attribute.mandatory || attribute.unique"/>
                     </span>
                 </span>
-                <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required hideInPrint" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html"></div>
+                <div ng-messages="innerForm.foo.$error" ng-if="interacted(innerForm.foo)" class="required hideInPrint" ng-messages-include="../dhis-web-commons/angular-forms/error-messages.html">
+                    <span ng-message="timeValidator">{{'time_error' | translate}}</span>
+                </div>
                 <div class="alert alert-warning alert-dismissible" role="alert" ng-if="warningMessages[attribute.id]">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
                     {{warningMessages[attribute.id]}}

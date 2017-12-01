@@ -33,6 +33,9 @@ trackerCapture.controller('RegistrationController',
     $scope.tei = {};
     $scope.registrationMode = 'REGISTRATION';    
     $scope.hiddenFields = {};
+
+    //Placeholder till proper settings for time is implemented. Currently hard coded to 12h format.
+    $scope.timeFormat = '12h';
     
     $scope.helpTexts = {};
     
