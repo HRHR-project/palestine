@@ -68,6 +68,43 @@ var d2Services = angular.module('d2Services', ['ngResource'])
             }
         };
     })
+    
+    .service('NotificationService', function (DialogService, $timeout) {
+        this.showNotifcationDialog = function(errorMsgheader, errorMsgBody, errorResponse){
+            var dialogOptions = {
+                headerText: errorMsgheader,
+                bodyText: errorMsgBody
+            };
+            var summaries = null;
+            if (errorResponse && errorResponse.data) {
+                if(errorResponse.data.message && (errorResponse.data.status === 'ERROR' || errorResponse.data.status === 'WARNING')) {
+                    dialogOptions.bodyText += "<br/>"+errorResponse.data.message+"<br/>";
+                }
+                if( errorResponse.data.response && errorResponse.data.response.importSummaries && errorResponse.data.response.importSummaries.length > 0 ){
+                    summaries = JSON.stringify(errorResponse.data.response.importSummaries);
+                }
+            }
+            DialogService.showDialog({}, dialogOptions, summaries);
+        };
+
+        this.showNotifcationWithOptions = function(dialogDefaults, dialogOptions){
+            DialogService.showDialog(dialogDefaults, dialogOptions);
+        };
+
+        this.displayDelayedHeaderMessage = function( message ){
+            setHeaderDelayMessage( message );
+        };
+
+        this.displayHeaderMessage = function( message ){
+            $timeout(function(){
+                setHeaderMessage( message );
+            }, 1000);
+        };
+
+        this.removeHeaderMessage = function(){
+            hideHeaderMessage();
+        };
+    })
 
     .service('AuthorityService', function () {
         var getAuthorities = function (roles) {
@@ -1255,7 +1292,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
     })
 
     /* service for building variables based on the data in users fields */
-    .service('VariableService', function(DateUtils,OptionSetService,OrgUnitFactory,$filter,$log){
+    .service('VariableService', function(DateUtils,OptionSetService,OrgUnitFactory,$filter,$log,$q){
         var processSingleValue = function(processedValue,valueType){
             //First clean away single or double quotation marks at the start and end of the variable name.
             processedValue = $filter('trimquotes')(processedValue);
@@ -1346,6 +1383,8 @@ var d2Services = angular.module('d2Services', ['ngResource'])
             },
             getVariables: function(allProgramRules, executingEvent, evs, allDes, allTeis, selectedEntity, selectedEnrollment, optionSets) {
 
+                var deferred = $q.defer();
+                
                 var variables = {};
 
                 var programVariables = allProgramRules.programVariables;
@@ -1522,13 +1561,14 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                     variables = pushVariable(variables, constant.id, constant.value, null, 'INTEGER', true, 'C', '', false);
                 });
 
-                var orgUnitUid = selectedEnrollment ? selectedEnrollment.orgUnit : executingEvent.orgUnit;
-                var orgUnitCode = '';
-                return OrgUnitFactory.getFromStoreOrServer( orgUnitUid ).then(function (response) {
-                    orgUnitCode = response.code;
-                    variables = pushVariable(variables, 'orgunit_code', orgUnitCode, null, 'TEXT', orgUnitCode ? true : false, 'V', '', false);
-                    return variables;
-                });
+                //var orgUnitUid = selectedEnrollment ? selectedEnrollment.orgUnit : executingEvent.orgUnit;
+                //var orgUnitCode = '';
+                //return OrgUnitFactory.getFromStoreOrServer( orgUnitUid ).then(function (response) {
+                //    orgUnitCode = response.code;
+                //    variables = pushVariable(variables, 'orgunit_code', orgUnitCode, null, 'TEXT', orgUnitCode ? true : false, 'V', '', false);
+                deferred.resolve(variables);
+                //});
+                return deferred.promise;
             }
         };
     })
@@ -2918,5 +2958,6 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                 }
             });
             return promise;
-        }
+        };
     });
+    
