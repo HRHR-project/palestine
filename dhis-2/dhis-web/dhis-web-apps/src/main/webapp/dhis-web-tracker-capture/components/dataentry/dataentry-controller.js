@@ -25,6 +25,7 @@ trackerCapture.controller('DataEntryController',
                 TrackerRulesExecutionService,
                 CustomFormService,
                 PeriodService,
+                OptionSetService,
                 TrackerRulesFactory,
                 EventCreationService,
                 SystemSettingsService,
@@ -206,24 +207,26 @@ trackerCapture.controller('DataEntryController',
     var processRuleEffect = function(event){
         //Establish which event was affected:
         var affectedEvent = $scope.currentEvent;
-        //In most cases the updated effects apply to the current event. In case the affected event is not the current event, fetch the correct event to affect:
-        if(event === 'registration' || event === 'dataEntryInit' || event === "globalKey") return;
+        if (!affectedEvent || !affectedEvent.event) {
+            //The data entry widget does not have an event selected.
+            return;
+        }
+        else if(event === 'registration' || event === 'dataEntryInit') {
+           //The data entry widget is associated with an event, 
+           //and therefore we do not want to process rule effects from the registration form
+           return;
+        }
 
         if (event !== affectedEvent.event) {
-            angular.forEach($scope.currentStageEvents, function (searchedEvent) {
-                if (searchedEvent.event === event) {
-                    affectedEvent = searchedEvent;
-                }
-            });
+            //if the current event is not the same as the affected event, 
+            //the effecs should be disregarded in the current events controller instance.
+            $log.warn("Event " + event + " was not found in the current scope.");
+            return;
         }
+
 
         $scope.assignedFields[event] = [];
         $scope.hiddenSections[event] = [];
-        //Hardcoding, NOMERGE
-        $scope.hiddenSections[event]["Ut6gEBgMy4V"] = true;
-        $scope.hiddenSections[event]["qrOd6GrYdsu"] = true;
-       
-        //End of NOMERGE
         $scope.warningMessages[event] = [];
         $scope.errorMessages[event] = [];
         $scope.hiddenFields[event] = [];
@@ -233,20 +236,24 @@ trackerCapture.controller('DataEntryController',
             if (effect.action === "HIDEFIELD") {                    
                 if (effect.dataElement) {
 
-                    if (effect.ineffect && affectedEvent[effect.dataElement.id]) {
-                        //If a field is going to be hidden, but contains a value, we need to take action;
-                        if (effect.content) {
-                            //TODO: Alerts is going to be replaced with a proper display mecanism.
-                            alert(effect.content);
-                        }
-                        else {
-                            //TODO: Alerts is going to be replaced with a proper display mecanism.
-                            alert($scope.prStDes[effect.dataElement.id].dataElement.displayFormName + "Was blanked out and hidden by your last action");
-                        }
+                    if(affectedEvent.status !== 'SCHEDULE' &&
+                        affectedEvent.status !== 'SKIPPED' &&
+                        !affectedEvent.editingNotAllowed) {
+                        if (effect.ineffect && affectedEvent[effect.dataElement.id]) {
+                            //If a field is going to be hidden, but contains a value, we need to take action;
+                            if (effect.content) {
+                                //TODO: Alerts is going to be replaced with a proper display mecanism.
+                                alert(effect.content);
+                            }
+                            else {
+                                //TODO: Alerts is going to be replaced with a proper display mecanism.
+                                alert($scope.prStDes[effect.dataElement.id].dataElement.displayFormName + " was blanked out and hidden by your last action");
+                            }
 
-                        //Blank out the value:
-                        affectedEvent[effect.dataElement.id] = "";
-                        $scope.saveDataValueForEvent($scope.prStDes[effect.dataElement.id], null, affectedEvent, true);
+                            //Blank out the value:
+                            affectedEvent[effect.dataElement.id] = "";
+                            $scope.saveDataValueForEvent($scope.prStDes[effect.dataElement.id], null, affectedEvent, true);
+                        }
                     }
 
                     if(effect.ineffect) {
@@ -255,17 +262,23 @@ trackerCapture.controller('DataEntryController',
                     else if( !$scope.hiddenFields[event][effect.dataElement.id]) {
                         $scope.hiddenFields[event][effect.dataElement.id] = false;
                     }
-
+                    
                 }
                 else {
-                    $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEFIELD, bot does not have a dataelement defined");
+                    if(!effect.trackedEntityAttribute) {
+                        $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEFIELD, bot does not have a field defined");                        
+                    }
                 }
-            } else if (effect.action === "SHOWERROR") {
+            } else if (effect.action === "SHOWERROR" 
+                    || effect.action === "ERRORONCOMPLETE") {
                 if (effect.ineffect) {
-
-                    if(effect.dataElement) {                           
-                        var message = effect.content;
-                        $scope.errorMessages[event][effect.dataElement.id] = message;
+                    var message = effect.content + (effect.data ? effect.data : "");
+                        
+                    if(effect.dataElement && $scope.prStDes[effect.dataElement.id]) {
+                        if(effect.action === "SHOWERROR") {
+                            //only SHOWERROR messages is going to be shown in the form as the user works
+                            $scope.errorMessages[event][effect.dataElement.id] = message;
+                        }
                         $scope.errorMessages[event].push($translate.instant($scope.prStDes[effect.dataElement.id].dataElement.displayName) + ": " + message);
                     }
                     else
@@ -273,14 +286,16 @@ trackerCapture.controller('DataEntryController',
                         $scope.errorMessages[event].push(message);
                     }
                 }
-                else {
-
-                }
-            } else if (effect.action === "SHOWWARNING") {
+            } else if (effect.action === "SHOWWARNING" 
+                    || effect.action === "WARNINGONCOMPLETE") {
                 if (effect.ineffect) {
-                    if(effect.dataElement) {
-                        var message = effect.content;
-                        $scope.warningMessages[event][effect.dataElement.id] = message;
+                    var message = effect.content + (effect.data ? effect.data : "");
+                        
+                    if(effect.dataElement && $scope.prStDes[effect.dataElement.id]) {
+                        if(effect.action === "SHOWWARNING") {
+                            //only SHOWWARNING messages is going to show up in the form as the user works
+                            $scope.warningMessages[event][effect.dataElement.id] = message;
+                        }
                         $scope.warningMessages[event].push($translate.instant($scope.prStDes[effect.dataElement.id].dataElement.displayName) + ": " + message);
                     } else {
                         $scope.warningMessages[event].push(message);
@@ -290,7 +305,7 @@ trackerCapture.controller('DataEntryController',
                 if(effect.programStageSection){
                     if(effect.ineffect){
                         $scope.hiddenSections[event][effect.programStageSection] = true;
-                    } else{
+                    } else if (!$scope.hiddenSections[event][effect.programStageSection]) {
                         $scope.hiddenSections[event][effect.programStageSection] = false;
                     }
                 }
@@ -298,26 +313,38 @@ trackerCapture.controller('DataEntryController',
                     $log.warn("ProgramRuleAction " + effect.id + " is of type HIDESECTION, bot does not have a section defined");
                 }
             } else if (effect.action === "ASSIGN") {
-                if(affectedEvent.status!=='SCHEDULE' && !affectedEvent.editingNotAllowed){
+                if(affectedEvent.status !== 'SCHEDULE' &&
+                        affectedEvent.status !== 'SKIPPED' &&
+                        !affectedEvent.editingNotAllowed) {
                     if(effect.ineffect && effect.dataElement) {
                         //For "ASSIGN" actions where we have a dataelement, we save the calculated value to the dataelement:
                         //Blank out the value:
                         var processedValue = $filter('trimquotes')(effect.data);
+
+                        if($scope.prStDes[effect.dataElement.id].dataElement.optionSet) {
+                            processedValue = OptionSetService.getName(
+                                    $scope.optionSets[$scope.prStDes[effect.dataElement.id].dataElement.optionSet.id].options, processedValue);
+                        }
+
+                        processedValue = processedValue === "true" ? true : processedValue;
+                        processedValue = processedValue === "false" ? false : processedValue;
+
                         affectedEvent[effect.dataElement.id] = processedValue;
                         $scope.assignedFields[event][effect.dataElement.id] = true;
+                        
                         $scope.saveDataValueForEvent($scope.prStDes[effect.dataElement.id], null, affectedEvent, true);
                     }
-                    //Special clause for folkehelsa, do not merge:
-                    else if(effect.content === '#{markedAsHighRisk}') {
-                        var isHighRisk = effect.data === true;
-                        if($scope.selectedEnrollment.followup !== isHighRisk){
-                            var enrollment = angular.copy($scope.selectedEnrollment);
-                            enrollment.followup = isHighRisk;
-                            EnrollmentService.update(enrollment).then(function(){
-                               $scope.selectedEnrollment.followup = enrollment.followup; 
-                            });
-                        }
+                }
+            }
+            else if (effect.action === "HIDEPROGRAMSTAGE") {
+                if (effect.programStage) {
+                    if($scope.stagesNotShowingInStageTasks[effect.programStage.id] !== effect.ineffect )
+                    {
+                        $scope.stagesNotShowingInStageTasks[effect.programStage.id] = effect.ineffect;
                     }
+                }
+                else {
+                    $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEPROGRAMSTAGE, bot does not have a stage defined");
                 }
             }
         });
@@ -597,11 +624,11 @@ trackerCapture.controller('DataEntryController',
         //If the events is displayed in a table, it is necessary to run the rules for all visible events.        
         if (angular.isDefined($scope.currentStage) && $scope.currentStage !== null && $scope.currentStage.displayEventsInTable && angular.isUndefined($scope.currentStage.rulesExecuted)){
             angular.forEach($scope.currentStageEvents, function (event) {
-                TrackerRulesExecutionService.executeRules($scope.allProgramRules, event, evs, $scope.prStDes, $scope.selectedTei, $scope.selectedEnrollment, flag);
+                TrackerRulesExecutionService.executeRules($scope.allProgramRules, event, evs, $scope.prStDes, $scope.attributesById, $scope.selectedTei, $scope.selectedEnrollment, $scope.optionSets, flag);
                 $scope.currentStage.rulesExecuted = true;
             });
         } else {
-            TrackerRulesExecutionService.executeRules($scope.allProgramRules, $scope.currentEvent, evs, $scope.prStDes, $scope.selectedTei, $scope.selectedEnrollment, flag, $scope.stagesById);
+            TrackerRulesExecutionService.executeRules($scope.allProgramRules, $scope.currentEvent, evs, $scope.prStDes, $scope.attributesById, $scope.selectedTei, $scope.selectedEnrollment, $scope.optionSets, flag);
         }
     };
     //listen for the selected items

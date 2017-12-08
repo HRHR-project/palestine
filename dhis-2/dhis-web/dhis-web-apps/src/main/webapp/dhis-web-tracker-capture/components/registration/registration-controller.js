@@ -337,83 +337,42 @@ trackerCapture.controller('RegistrationController',
         }
     };
     
-    var processRuleEffect = function(){        
-        $scope.warningMessages = [];        
-        angular.forEach($rootScope.ruleeffects['registration'], function (effect) {
-            if (effect.trackedEntityAttribute) {
-                //in the data entry controller we only care about the "hidefield", showerror and showwarning actions
-                if (effect.action === "HIDEFIELD") {
-                    if (effect.trackedEntityAttribute) {
-                        if (effect.ineffect && $scope.selectedTei[effect.trackedEntityAttribute.id]) {
-                            //If a field is going to be hidden, but contains a value, we need to take action;
-                            if (effect.content) {
-                                //TODO: Alerts is going to be replaced with a proper display mecanism.
-                                alert(effect.content);
-                            }
-                            else {
-                                //TODO: Alerts is going to be replaced with a proper display mecanism.
-                                alert($scope.attributesById[effect.trackedEntityAttribute.id].displayName + "Was blanked out and hidden by your last action");
-                            }
-
-                            //Blank out the value:
-                            $scope.selectedTei[effect.trackedEntityAttribute.id] = "";
-                        }
-
-                        $scope.hiddenFields[effect.trackedEntityAttribute.id] = effect.ineffect;
-                    }
-                    else {
-                        $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEFIELD, bot does not have an attribute defined");
-                    }
-                } else if (effect.action === "SHOWERROR") {
-                    if (effect.trackedEntityAttribute) {                        
-                        if(effect.ineffect) {
-                            var dialogOptions = {
-                                headerText: 'validation_error',
-                                bodyText: effect.content + (effect.data ? effect.data : "")
-                            };
-                            DialogService.showDialog({}, dialogOptions);
-                            $scope.selectedTei[effect.trackedEntityAttribute.id] = $scope.tei[effect.trackedEntityAttribute.id];
-                        }
-                    }
-                    else {
-                        $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEFIELD, bot does not have an attribute defined");
-                    }
-                } else if (effect.action === "SHOWWARNING") {
-                    if (effect.trackedEntityAttribute) {
-                        if(effect.ineffect) {
-                            var message = effect.content + (angular.isDefined(effect.data) ? effect.data : "");
-                            $scope.warningMessages.push(message);
-                            $scope.warningMessages[effect.trackedEntityAttribute.id] = message;
-                        }
-                    }
-                    else {
-                        $log.warn("ProgramRuleAction " + effect.id + " is of type HIDEFIELD, bot does not have an attribute defined");
-                    }
-                }
-            }
-        });
-    };
-    
+    var flag = {debug: true, verbose: false};
     $scope.executeRules = function () {
-        var flag = {debug: true, verbose: false};
-        
         //repopulate attributes with updated values
         $scope.selectedTei.attributes = [];
-        
-        angular.forEach($scope.attributes, function(metaAttribute){
-            var newAttributeInArray = {attribute:metaAttribute.id,
-                code:metaAttribute.code,
-                displayName:metaAttribute.displayName,
-                type:metaAttribute.valueType,
+        angular.forEach($scope.attributes, function (metaAttribute) {
+            var newAttributeInArray = {
+                attribute: metaAttribute.id,
+                code: metaAttribute.code,
+                displayName: metaAttribute.displayName,
+                type: metaAttribute.valueType,
                 value: $scope.selectedTei[metaAttribute.id]
             };
-            
-           $scope.selectedTei.attributes.push(newAttributeInArray);
+
+            $scope.selectedTei.attributes.push(newAttributeInArray);
         });
-        
-        if($scope.selectedProgram && $scope.selectedProgram.id){
-            TrackerRulesExecutionService.executeRules($scope.allProgramRules, 'registration', null, null, $scope.selectedTei, $scope.selectedEnrollment, flag);
-        }        
+
+        if ($scope.selectedProgram && $scope.selectedProgram.id) {
+            var eventExists = $scope.currentEvent && $scope.currentEvent.event;
+            var evs = null;
+            if( eventExists ){
+                evs = {all: [], byStage: {}};
+                evs.all = [$scope.currentEvent];
+                evs.byStage[$scope.currentStage.id] = [$scope.currentEvent];
+            }
+            
+            TrackerRulesExecutionService.executeRules(
+                $scope.allProgramRules, 
+                eventExists ? $scope.currentEvent : 'registration', 
+                evs,
+                $scope.prStDes, 
+                $scope.attributesById,
+                $scope.selectedTei, 
+                $scope.selectedEnrollment, 
+                $scope.optionSets, 
+                flag);
+        }
     };
     
     //check if field is hidden
@@ -429,7 +388,21 @@ trackerCapture.controller('RegistrationController',
     
     //listen for rule effect changes
     $scope.$on('ruleeffectsupdated', function (event, args) {
-        processRuleEffect(args.event);
+        if (args.event === "registration" || args.event === 'SINGLE_EVENT') {
+            $scope.warningMessages = [];
+            $scope.hiddenFields = [];
+            $scope.assignedFields = [];
+            $scope.errorMessages = {};
+            $scope.hiddenSections = [];
+
+            var effectResult = TrackerRulesExecutionService.processRuleEffectAttribute(args.event, $scope.selectedTei, $scope.tei, $scope.currentEvent, {}, $scope.currentEvent, $scope.attributesById, $scope.prStDes, $scope.hiddenFields, $scope.hiddenSections, $scope.warningMessages, $scope.assignedFields, $scope.optionSets);
+            $scope.selectedTei = effectResult.selectedTei;
+            $scope.currentEvent = effectResult.currentEvent;
+            $scope.hiddenFields = effectResult.hiddenFields;
+            $scope.hiddenSections = effectResult.hiddenSections;
+            $scope.assignedFields = effectResult.assignedFields;
+            $scope.warningMessages = effectResult.warningMessages;
+        }
     });
     
     $scope.$on('changeOrgUnit', function (event, args) {
