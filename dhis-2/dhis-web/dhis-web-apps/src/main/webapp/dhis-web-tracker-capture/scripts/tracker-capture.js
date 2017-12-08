@@ -564,5 +564,5 @@ function getMetaProgramRuleVariables( programs, programIds)
 
 function getProgramRuleVariables( programRuleVariables )
 {
-    return dhis2.tracker.checkAndGetTrackerObjects( programRuleVariables, 'programRuleVariables', '../api/programRuleVariables', 'fields=id,name,displayName,programRuleVariableSourceType,program[id],programStage[id],dataElement[id],trackedEntityAttribute[id]', dhis2.tc.store);
+    return dhis2.tracker.checkAndGetTrackerObjects( programRuleVariables, 'programRuleVariables', '../api/programRuleVariables', 'fields=id,name,displayName,programRuleVariableSourceType,program[id],programStage[id],dataElement[id],trackedEntityAttribute[id],useCodeForOptionSet', dhis2.tc.store);
 }
