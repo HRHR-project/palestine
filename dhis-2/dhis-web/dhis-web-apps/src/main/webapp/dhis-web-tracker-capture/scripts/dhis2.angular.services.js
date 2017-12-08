@@ -1367,6 +1367,158 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                                                 OptionSetService.getCode(optionSets[allTeis[trackedEntityAttributeId].optionSet.id].options, value)
                                                 : value;
         };
+        
+        //Folkehelsa:
+        var getHighRiskPregnancy = function(evs){
+            var highRisk = false;
+            if(evs && evs.byStage) {
+                angular.forEach(evs.byStage['tlzRiafqzgd'], function(stage) {
+                    //Management performed: RO9lM47fth5 - Management type: AcMrnleqHqc
+                    angular.forEach(stage.dataValues, function(dataValue){
+                        if(dataValue.dataElement === 'AcMrnleqHqc' &&
+                               (dataValue.value === "RefHighRisk" || dataValue.value === "RefHosp" )) {
+                            if(stage['RO9lM47fth5'] !== "false") {
+                                highRisk = true;
+                            }
+                        }
+                    });
+                });
+            }
+            return highRisk;
+        };
+            //Folkehelsa:
+        var getUnManagedReferral = function(evs){
+            var unManaged = false;
+            if(evs && evs.byStage) {
+                angular.forEach(evs.byStage['tlzRiafqzgd'], function(stage) {
+                    //Management performed: RO9lM47fth5 - Management type: AcMrnleqHqc
+                    angular.forEach(stage.dataValues, function(dataValue){
+                        if(dataValue.dataElement === 'AcMrnleqHqc' &&
+                               (dataValue.value === "RefHighRisk" 
+                               || dataValue.value === "RefHosp" 
+                               || dataValue.value === "RefSpec"
+                               || dataValue.value === "RefUtra"
+                               || dataValue.value === "RefLab")) {
+                            if(stage['RO9lM47fth5'] !== "false" && stage['RO9lM47fth5'] !== "true") {
+                                unManaged = true;
+                            }
+                        }
+                    });
+                });
+            }
+            return unManaged;
+        };
+        //folkehelsa:
+        var getPreviousPregnanciesCount = function(evs, programVariables){
+
+            if(!evs || !programVariables) {
+                return 0;
+            }
+
+            var PregnanciesCount = 0;
+            var prevPregStageId = "PUZaKR0Jh2k";
+            var currentPregStageId = "bO5aSsPeB4A";
+            var prevPregEvents = evs.byStage[prevPregStageId].concat(evs.byStage[currentPregStageId]);
+            var connectedEventIds = [];
+            var elementRequirements = [];
+
+            //get previousOutcomes dataElementid
+            for(var pv = 0; pv < programVariables.length; pv++){
+                if(programVariables[pv].name === "previousoutcomes"){
+                    elementRequirements.push(programVariables[pv].dataElement.id);
+                }
+            }
+            var prevPregEventsWithFullfilledRequirements = [];
+
+            angular.forEach(prevPregEvents, function(event){
+                var requirementsMet = true;
+                for(var er = 0; er < elementRequirements.length; er++){
+                    if(!event.hasOwnProperty(elementRequirements[er]) || event[elementRequirements[er]] === ""){
+                        requirementsMet = false;
+                        break;
+                    }
+                }
+
+                if(requirementsMet === true){
+                    prevPregEventsWithFullfilledRequirements.push(event);
+                }
+            });        
+
+            var i = 0;
+            var msPerDay = 1000 * 60 * 60 * 24;
+            var daysMargin = 7;
+            angular.forEach(prevPregEventsWithFullfilledRequirements, function(srcEvent){
+                i++;               
+
+                if(angular.isUndefined(connectedEventIds[srcEvent.event])){
+                    for(var j = i; j < prevPregEvents.length; j++){
+                        var compareEvent = prevPregEvents[j];
+                        var srcDate = new Date(srcEvent.eventDate);
+                        var compareDate = new Date(compareEvent.eventDate);
+
+                        var dayDiff = Math.abs(Math.floor((srcDate - compareDate) / msPerDay));
+                        if(dayDiff < daysMargin){                        
+                            connectedEventIds[compareEvent.event] = srcEvent.event;
+                        }
+                    }
+                    PregnanciesCount++;
+                }
+
+            });
+
+            return PregnanciesCount;        
+        };
+        var getPreviousPregnancyData = function(evs,elementRequirements){
+
+            if(!evs) {
+                return 0;
+            }
+
+            var CSectionsCount = 0;
+            var prevPregStageId = "PUZaKR0Jh2k";
+            var prevPregEvents = evs.byStage[prevPregStageId];
+            var connectedEventIds = [];
+
+            var prevPregEventsWithFullfilledRequirements = [];
+
+            angular.forEach(prevPregEvents, function(event){
+                var requirementsMet = true;
+                for(var er = 0; er < elementRequirements.length; er++){
+                    if(!event.hasOwnProperty(elementRequirements[er].id) || event[elementRequirements[er].id] !== elementRequirements[er].value ){
+                        requirementsMet = false;
+                        break;
+                    }
+                }
+
+                if(requirementsMet === true){
+                    prevPregEventsWithFullfilledRequirements.push(event);
+                }
+            });        
+
+            var i = 0;
+            var msPerDay = 1000 * 60 * 60 * 24;
+            var daysMargin = 7;
+            angular.forEach(prevPregEventsWithFullfilledRequirements, function(srcEvent){
+                i++;               
+
+                if(angular.isUndefined(connectedEventIds[srcEvent.event])){
+                    for(j = i; j < prevPregEvents.length; j++){
+                        var compareEvent = prevPregEvents[j];
+                        var srcDate = new Date(srcEvent.eventDate);
+                        var compareDate = new Date(compareEvent.eventDate);
+
+                        var dayDiff = Math.abs(Math.floor((srcDate - compareDate) / msPerDay));
+                        if(dayDiff < daysMargin){                        
+                            connectedEventIds[compareEvent.event] = srcEvent.event;
+                        }
+                    }
+                    CSectionsCount++;
+                }
+            });
+
+            return CSectionsCount;        
+        };
+
 
         return {
             processValue: function(value, type) {
@@ -1380,6 +1532,12 @@ var d2Services = angular.module('d2Services', ['ngResource'])
             },
             getTrackedEntityValueOrCodeForValue: function(useCodeForOptionSet, value, trackedEntityAttributeId, allTeis, optionSets) {
                 return geTrackedEntityAttributeValueOrCodeForValueInternal(useCodeForOptionSet, value, trackedEntityAttributeId, allTeis, optionSets);
+            },
+            getHighRiskPregnancy: function(evs) {
+                return getHighRiskPregnancy(evs);
+            },
+            getUnManagedReferral: function(evs) {
+                return getUnManagedReferral(evs);
             },
             getVariables: function(allProgramRules, executingEvent, evs, allDes, allTeis, selectedEntity, selectedEnrollment, optionSets) {
 
@@ -1555,6 +1713,14 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                 variables = pushVariable(variables, 'incident_date', selectedEnrollment ? selectedEnrollment.incidentDate : '', null, 'DATE',  selectedEnrollment ? true : false, 'V', '', false);
                 variables = pushVariable(variables, 'enrollment_count', selectedEnrollment ? 1 : 0, null, 'INTEGER', true, 'V', '', false);
                 variables = pushVariable(variables, 'tei_count', selectedEnrollment ? 1 : 0, null, 'INTEGER', true, 'V', '', false);
+                
+                //folkehelsa:
+                if(selectedEnrollment) {
+                    variables = pushVariable(variables, 'pp_count', getPreviousPregnanciesCount(evs, programVariables), null, 'INTEGER', true, 'V', '');
+                    variables = pushVariable(variables, 'cs_count', getPreviousPregnancyData(evs, [{id:"mrVkW9h2Rdp",value:"Alive"},{id:"W4zW3aPyS0G",value:"C-Section"}]), null, 'INTEGER', true, 'V', '');
+                    variables = pushVariable(variables, 'highRiskPregnancy', getHighRiskPregnancy(evs), null, 'BOOLEAN', true, 'V', '');
+                    variables = pushVariable(variables, 'unManagedReferral', getUnManagedReferral(evs), null, 'BOOLEAN', true, 'V', '');
+                }
                 
                 //Push all constant values:
                 angular.forEach(allProgramRules.constants, function(constant){
@@ -2190,6 +2356,8 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                 var newEventDataValues = [];
                 var idList = {active:false};
 
+                var eventStatus = 'ACTIVE';
+            
                 angular.forEach(valArray, function(value) {
                     var valParts = value.split(':');                
                     if(valParts && valParts.length >= 1) {
@@ -2206,12 +2374,19 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                         if(valParts.length > 1) {
                             valVal = valParts[1];
                         }
-                        var valueType = determineValueType(valVal);
 
-                        var processedValue = VariableService.processValue(valVal, valueType);
-                        processedValue = $filter('trimquotes')(processedValue);
-                        newEventDataValues.push({dataElement:valId,value:processedValue});
-                        newEventDataValues[valId] = processedValue;
+                        if(valId.trim() === "Status") {
+                            eventStatus = valVal;
+                        }
+                        else {
+                            var valueType = determineValueType(valVal);
+
+                            var processedValue = VariableService.processValue(valVal, valueType);
+                            processedValue = $filter('trimquotes')(processedValue);
+                            newEventDataValues.push({dataElement:valId,value:processedValue});
+                            newEventDataValues[valId] = processedValue; 
+                        }
+
                     }
                 });
 
@@ -2257,7 +2432,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                         eventDate: eventDate,
                         notes: [],
                         dataValues: newEventDataValues,
-                        status: 'ACTIVE',
+                        status: eventStatus,
                         event: dhis2.util.uid()
                     };
 
@@ -2268,7 +2443,7 @@ var d2Services = angular.module('d2Services', ['ngResource'])
                     }
                     else{
                         DHIS2EventFactory.create(newEvent).then(function(result){
-                        $rootScope.$broadcast("eventcreated", { event:newEvent });
+                           $rootScope.$broadcast("eventcreated", { event:newEvent });
                         }); 
                     }
                     //1 event created

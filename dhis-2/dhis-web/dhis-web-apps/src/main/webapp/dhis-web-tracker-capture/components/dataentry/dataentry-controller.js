@@ -25,6 +25,7 @@ trackerCapture.controller('DataEntryController',
                 TrackerRulesExecutionService,
                 CustomFormService,
                 PeriodService,
+                OptionSetService,
                 TrackerRulesFactory,
                 EventCreationService,
                 SystemSettingsService,
@@ -347,8 +348,6 @@ trackerCapture.controller('DataEntryController',
                 }
             }
         });
-        
-        updateTabularEntryStages();
     };
     
     $scope.mainMenuStageSelected = function(){
