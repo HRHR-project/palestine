@@ -1450,6 +1450,10 @@ trackerCapture.controller('DataEntryController',
                         //for folkehelsa                        
                         if($scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.id === "z2OCjflFLxa"){
                             $scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.description = "Complications that occur during pregnancy, labor and/or until 6 weeks postpartum";
+                        } else if($scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.id === "vjMvkCTew8A") {
+                            $scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.description = "Complications that occurred during this particular delivery";
+                        } else if($scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.id === "XKV79R3LG5J") {
+                            $scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.description = "Complications that occurred during this particular postpartum period";
                         }
                         //-------------
                         $scope.currentStage.programStageDataElements.splice(i+1+groupsAdded,0,$scope.currentStage.multiSelectGroups[dataElementGroup.id]);
