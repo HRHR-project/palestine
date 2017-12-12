@@ -1446,11 +1446,6 @@ trackerCapture.controller('DataEntryController',
                         $scope.currentStage.multiSelectGroups[dataElementGroup.id] = $scope.prStDes[dataElementGroup.id] =
                             {dataElement:{valueType:'MULTI_SELECT_GROUP',displayName:dataElementGroup.displayName,id:dataElementGroup.id},
                              dataElements: []};
-                         
-                        //for folkehelsa                        
-                        if($scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.id === "z2OCjflFLxa"){
-                            $scope.currentStage.multiSelectGroups[dataElementGroup.id].dataElement.description = "Complications that occur during pregnancy, labor and/or until 6 weeks postpartum";
-                        }
                         //-------------
                         $scope.currentStage.programStageDataElements.splice(i+1+groupsAdded,0,$scope.currentStage.multiSelectGroups[dataElementGroup.id]);
                         groupsAdded++;
