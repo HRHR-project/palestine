@@ -407,13 +407,16 @@ trackerCapture.controller('DataEntryController',
         $scope.deSelectCurrentEvent();
         $rootScope.$broadcast('DataEntryMainMenuVisibilitySet', {visible: true, visibleItems: $scope.visibleWidgetsInMainMenu});
     };
-    
-    $scope.bottomLineItems = {BjNpOxjvEj5:true,PUZaKR0Jh2k:true,uUHQw5KrZAL:true};
-    $scope.neverShowItems = {iXDSolqmauJ: true, tlzRiafqzgd: true, w9cPvMH5LaN: true,
-        WPgz41MctSW:true, HaOwL7bIdrs: true, MO39jKgz2VA: true, E8Jetf3Q90U: true};
-    $scope.topLineStageFilter = {};
-    $scope.headerStages = [];
-    $scope.headerCombineStages = {WZbXY0S00lP: "edqlbukwRfQ", w0pwmNYugKX: "dqF3sxJKBls"};
+
+    SystemSettingsService.getMainMenuConfig().then(function(response){
+        $scope.mainMenuConfig = response;
+
+        $scope.bottomLineItems = $scope.mainMenuConfig.bottomLineItems;
+        $scope.neverShowItems = $scope.mainMenuConfig.neverShowItems;
+        $scope.topLineStageFilter = $scope.mainMenuConfig.topLineStageFilter;
+        $scope.headerStages = $scope.mainMenuConfig.headerStages;
+        $scope.headerCombineStages = $scope.mainMenuConfig.headerCombineStages;
+    });
     
     $scope.getHeaderStages = function(){
         angular.forEach($scope.programStages, function(stage){
@@ -1076,7 +1079,7 @@ trackerCapture.controller('DataEntryController',
             if(angular.isUndefined($scope.eventsByStage['WZbXY0S00lP']) || $scope.eventsByStage['WZbXY0S00lP'].length === 0){
                 stage = $scope.stagesById['WZbXY0S00lP'];
             } 
-        } else if(stage.id === 'dqF3sxJKBls') {
+        } else if(stage.id === 'dqF3sxJKBls' && $scope.isBangladesh) {
             if(angular.isUndefined($scope.eventsByStage['w0pwmNYugKX']) || $scope.eventsByStage['w0pwmNYugKX'].length === 0){
                 stage = $scope.stagesById['w0pwmNYugKX'];
             }
@@ -1556,7 +1559,7 @@ trackerCapture.controller('DataEntryController',
         $scope.executeRules();
         if($scope.currentStage.id === 'edqlbukwRfQ'){
             $scope.setPreviousValuesTable('WZbXY0S00lP');          
-        } else if($scope.currentStage.id === 'dqF3sxJKBls') {
+        } else if($scope.currentStage.id === 'dqF3sxJKBls' && $scope.isBangladesh) {
             $scope.setPreviousValuesTable('w0pwmNYugKX');
         }
 

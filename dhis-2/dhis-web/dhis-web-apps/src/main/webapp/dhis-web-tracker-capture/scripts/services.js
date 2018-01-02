@@ -129,6 +129,14 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
                 return null;
             });
             return promise;            
+        },
+        getMainMenuConfig: function(){
+            var promise = $http.get('../api/systemSettings/trackerCaptureMainMenuConfig').then(function(response){
+                return response.data;
+            }, function(){
+                return null;
+            });
+            return promise;
         }
     };
 })
