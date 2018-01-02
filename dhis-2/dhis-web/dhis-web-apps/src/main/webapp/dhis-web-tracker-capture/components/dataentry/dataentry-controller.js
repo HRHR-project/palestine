@@ -411,11 +411,20 @@ trackerCapture.controller('DataEntryController',
     SystemSettingsService.getMainMenuConfig().then(function(response){
         $scope.mainMenuConfig = response;
 
-        $scope.bottomLineItems = $scope.mainMenuConfig.bottomLineItems;
-        $scope.neverShowItems = $scope.mainMenuConfig.neverShowItems;
-        $scope.topLineStageFilter = $scope.mainMenuConfig.topLineStageFilter;
-        $scope.headerStages = $scope.mainMenuConfig.headerStages;
-        $scope.headerCombineStages = $scope.mainMenuConfig.headerCombineStages;
+        if(!$scope.mainMenuConfig) {
+            $scope.bottomLineItems = {BjNpOxjvEj5:true,PUZaKR0Jh2k:true,uUHQw5KrZAL:true};
+            $scope.neverShowItems = {iXDSolqmauJ: true, tlzRiafqzgd: true, w9cPvMH5LaN: true,
+                                    WPgz41MctSW:true, HaOwL7bIdrs: true, MO39jKgz2VA: true, E8Jetf3Q90U: true};
+            $scope.topLineStageFilter = {};
+            $scope.headerStages = [];
+            $scope.headerCombineStages = {WZbXY0S00lP: "edqlbukwRfQ", w0pwmNYugKX: "dqF3sxJKBls"};
+        } else {
+            $scope.bottomLineItems = $scope.mainMenuConfig.bottomLineItems;
+            $scope.neverShowItems = $scope.mainMenuConfig.neverShowItems;
+            $scope.topLineStageFilter = $scope.mainMenuConfig.topLineStageFilter;
+            $scope.headerStages = $scope.mainMenuConfig.headerStages;
+            $scope.headerCombineStages = $scope.mainMenuConfig.headerCombineStages;
+        }
     });
     
     $scope.getHeaderStages = function(){
