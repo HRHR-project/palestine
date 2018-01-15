@@ -34,8 +34,10 @@
                                d2-date
                                d2-date-validator
                                disabled-days='{{[5,6]}}'
-                               ng-model="dhis2Event.dueDate">
+                               ng-model="dhis2Event.dueDate"
+                               ng-change="calcGestAge(dhis2Event.dueDate)">
                         <span ng-if="model.dueDateInvalid" class="error">{{'required'| translate}}</span>
+                        <div class="well well-sm" style="margin-bottom: 0px;">{{'gest_age_at_schedule'| translate}} <b>{{gestAgeWeeks}}+{{gestAgeDays}}</b></div>
                     </div> 
                 </div>
             </div>
