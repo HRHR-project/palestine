@@ -48,22 +48,26 @@ trackerCapture.controller('EventCreationController',
     $scope.scheduleDateDataElement = "";
     $scope.daysPregAtSchedDate = 0;
 
-    for(var i = 0; i < stage.programStageDataElements.length; i++) {
-        if(stage.programStageDataElements[i].dataElement.code === "DAYSPREGNANTATSCHEDULEDDDATE") {
-            var id = stage.programStageDataElements[i].dataElement.id;
-            $scope.daysPregAtSchedDate = currentEvent[id];
-            $scope.gestAgeWeeks = Math.floor($scope.daysPregAtSchedDate/7);
-            $scope.gestAgeDays = $scope.daysPregAtSchedDate%7;
+    if(currentEvent) {
+        for(var i = 0; i < stage.programStageDataElements.length; i++) {
+            if(stage.programStageDataElements[i].dataElement.code === "DAYSPREGNANTATSCHEDULEDDDATE") {
+                var id = stage.programStageDataElements[i].dataElement.id;
+                $scope.daysPregAtSchedDate = currentEvent[id];
+                $scope.gestAgeWeeks = Math.floor($scope.daysPregAtSchedDate/7);
+                $scope.gestAgeDays = $scope.daysPregAtSchedDate%7;
 
+            }
         }
     }
 
     function prepareEvent(){
        
-        for(var i = 0; i < stage.programStageDataElements.length; i++) {
-            if(stage.programStageDataElements[i].dataElement.code === "SCHEDULEDATE") {
-                var id = stage.programStageDataElements[i].dataElement.id;
-                $scope.scheduleDateDataElement = currentEvent[id];
+        if(currentEvent) {
+            for(var i = 0; i < stage.programStageDataElements.length; i++) {
+                if(stage.programStageDataElements[i].dataElement.code === "SCHEDULEDATE") {
+                    var id = stage.programStageDataElements[i].dataElement.id;
+                    $scope.scheduleDateDataElement = currentEvent[id];
+                }
             }
         }
 

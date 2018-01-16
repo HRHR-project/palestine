@@ -1082,7 +1082,6 @@ trackerCapture.controller('DataEntryController',
     
     $scope.stageErrorInEventLayout = [];
     $scope.showCreateEventIfStageNeedsEvent = function(stage, eventCreationAction, requireStageEventsToBeCompleted, showModalOnNoEventsNeeded){
-        console.log(stage);
         //custom code for folkehelsa
         if(stage.id === 'edqlbukwRfQ'){
             if(angular.isUndefined($scope.eventsByStage['WZbXY0S00lP']) || $scope.eventsByStage['WZbXY0S00lP'].length === 0){
@@ -1093,7 +1092,6 @@ trackerCapture.controller('DataEntryController',
                 stage = $scope.stagesById['w0pwmNYugKX'];
             }
         }
-        console.log(stage);
         //-------------------------                
         
         showModalOnNoEventsNeeded = angular.isDefined(showModalOnNoEventsNeeded) && showModalOnNoEventsNeeded === true ? true : false;
