@@ -410,7 +410,6 @@ trackerCapture.controller('EventCreationController',
 
         
         daysBetween = (newDate - originalDate) / 1000 / 60 / 60 / 24;
-        console.log(daysBetween);
         
         $scope.gestAgeWeeks = Math.floor(($scope.daysPregAtSchedDate + daysBetween) / 7);
         $scope.gestAgeDays = ($scope.daysPregAtSchedDate + daysBetween) % 7;
