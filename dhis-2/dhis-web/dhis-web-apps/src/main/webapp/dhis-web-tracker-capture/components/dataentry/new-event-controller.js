@@ -46,7 +46,7 @@ trackerCapture.controller('EventCreationController',
     var dummyEvent = {};
     
     $scope.scheduleDateDataElement = "";
-    $scope.daysPregAtSchedDate = 0;
+    $scope.daysPregAtSchedDate = -1;
 
     if(currentEvent) {
         for(var i = 0; i < stage.programStageDataElements.length; i++) {
