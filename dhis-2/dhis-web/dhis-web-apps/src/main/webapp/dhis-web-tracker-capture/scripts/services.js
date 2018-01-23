@@ -1865,7 +1865,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
     };
     
     return {
-        createDummyEvent: function(eventsPerStage, tei, program, programStage, orgUnit, enrollment){
+        createDummyEvent: function(eventsPerStage, tei, program, programStage, orgUnit, enrollment, scheduleDate){
             var today = DateUtils.getToday();
             var dummyEvent = {trackedEntityInstance: tei.trackedEntityInstance, 
                               programStage: programStage.id, 
@@ -1887,6 +1887,10 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
             }
             else{
                 dummyEvent.dueDate = getEventDueDate(eventsPerStage, programStage, enrollment);
+            }
+
+            if(scheduleDate) {
+                dummyEvent.dueDate = scheduleDate;
             }
             
             dummyEvent.sortingDate = dummyEvent.dueDate;
@@ -2040,7 +2044,7 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
 
 .service('EventCreationService', function($modal){
             
-        this.showModal = function(eventsByStage, stage, availableStages,programStages,selectedEntity,selectedProgram,selectedOrgUnit,selectedEnrollment, autoCreate, eventCreationAction,allEventsSorted, suggestedStage){
+        this.showModal = function(eventsByStage, stage, availableStages,programStages,selectedEntity,selectedProgram,selectedOrgUnit,selectedEnrollment, autoCreate, eventCreationAction,allEventsSorted, suggestedStage, currentEvent){
             var modalInstance = $modal.open({
                 templateUrl: 'components/dataentry/new-event.html',
                 controller: 'EventCreationController',
@@ -2080,6 +2084,9 @@ var trackerCaptureServices = angular.module('trackerCaptureServices', ['ngResour
                     },
                     suggestedStage: function(){
                         return suggestedStage;
+                    },
+                    currentEvent: function() {
+                        return currentEvent;
                     }
                 }
             }).result;
