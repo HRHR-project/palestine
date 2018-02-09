@@ -245,7 +245,8 @@ trackerCapture.controller('DashboardController',
                                                     if(userName === events[j].storedBy || events[j].programStage === 'oqzsvYWCX6w' || events[j].programStage === 'DkTWLAkzQlw') {
                                                         tempEvents.push(events[j]);
                                                     }
-                                                }                                                
+                                                }
+                                                events = tempEvents;                                           
                                             } else if(userRoles[i].id === 'cjL8PFkZUOO' || userRoles[i].id === 'KXhketBMNMq') {
                                                 for(var j = 0; j < events.length; j++) {
                                                     if(userName === events[j].storedBy && events[j].programStage === 'LlzpPQQq1cm') {
@@ -254,8 +255,8 @@ trackerCapture.controller('DashboardController',
                                                         tempEvents.push(events[j]);
                                                     }
                                                 }
+                                                events = tempEvents;
                                             }
-                                            events = tempEvents;
                                         }
 
                                         //prepare selected items for broadcast
