@@ -238,16 +238,18 @@ trackerCapture.controller('DashboardController',
                                         var tempEvents = [];
                                         
                                         //If user has "control data" role we need to filter events
-                                        //so that only events that that user has created are shown. gp38DrOrHhc
+                                        //so that only events that that user has created are shown.
                                         for(var i = 0; i < userRoles.length; i++) {
                                             if(userRoles[i].id === 'gp38DrOrHhc' || userRoles[i].id === 'jfRj5BLaRC1') {
+                                                tempEvents = [];
                                                 for(var j = 0; j < events.length; j++) {
-                                                    if(userName === events[j].storedBy || events[j].programStage === 'oqzsvYWCX6w' || events[j].programStage === 'DkTWLAkzQlw') {
+                                                    if(userName === events[j].storedBy || events[j].programStage === 'Ty22Qt2u4QL' || events[j].programStage === 'oqzsvYWCX6w' || events[j].programStage === 'uD4lKVSbeyB') {
                                                         tempEvents.push(events[j]);
                                                     }
                                                 }
                                                 events = tempEvents;                                           
                                             } else if(userRoles[i].id === 'cjL8PFkZUOO' || userRoles[i].id === 'KXhketBMNMq') {
+                                                tempEvents = [];
                                                 for(var j = 0; j < events.length; j++) {
                                                     if(userName === events[j].storedBy && events[j].programStage === 'LlzpPQQq1cm') {
                                                         tempEvents.push(events[j]);
